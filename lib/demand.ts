@@ -57,7 +57,7 @@ function addDays(date: Date, days: number): Date {
   return result;
 }
 
-function resolveWindow(option: WindowOption): {
+export function resolveDemandWindow(option: WindowOption): {
   windowStart: string;
   windowEnd: string;
 } {
@@ -151,7 +151,7 @@ export function validateDemandForm(formData: FormData): DemandValidationResult {
       volume,
       price,
       windowOption,
-      ...resolveWindow(windowOption),
+      ...resolveDemandWindow(windowOption),
     },
   };
 }

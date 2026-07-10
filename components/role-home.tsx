@@ -63,10 +63,15 @@ export function RoleHome({ auth }: RoleHomeProps) {
         </article>
 
         {!isAdmin ? (
-          <Link className="primary-link" href="/ajukan">
-            <span aria-hidden="true">+</span>
-            Ajukan Kebutuhan
-          </Link>
+          <div className="home-actions">
+            <Link className="primary-link" href="/ajukan">
+              <span aria-hidden="true">+</span>
+              Ajukan Kebutuhan
+            </Link>
+            <Link className="secondary-link" href="/pool">
+              Lihat Pool Aktif
+            </Link>
+          </div>
         ) : null}
       </section>
     </main>

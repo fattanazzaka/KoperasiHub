@@ -9,7 +9,13 @@ export const metadata = {
   title: "Ajukan Kebutuhan",
 };
 
-export default async function SubmitDemandPage() {
+type SubmitDemandPageProps = {
+  searchParams: Promise<{ commodity?: string }>;
+};
+
+export default async function SubmitDemandPage({
+  searchParams,
+}: SubmitDemandPageProps) {
   const auth = await getAuthContext();
 
   if (!auth) {
@@ -19,6 +25,8 @@ export default async function SubmitDemandPage() {
   if (auth.role !== "koperasi" || !auth.cooperative) {
     redirect(getRoleDestination(auth.role));
   }
+
+  const { commodity } = await searchParams;
 
   return (
     <main className="form-page">
@@ -36,6 +44,7 @@ export default async function SubmitDemandPage() {
           commodities={devCommodities}
           cooperativeName={auth.cooperative.nama}
           wilayah={auth.cooperative.kabupaten}
+          initialCommodityId={commodity}
         />
       </section>
     </main>

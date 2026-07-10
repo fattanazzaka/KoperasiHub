@@ -17,6 +17,7 @@ type DemandFormProps = {
   commodities: readonly DevCommodity[];
   cooperativeName: string;
   wilayah: string;
+  initialCommodityId?: string;
 };
 
 const initialState: DemandActionState = {
@@ -29,9 +30,15 @@ export function DemandForm({
   commodities,
   cooperativeName,
   wilayah,
+  initialCommodityId,
 }: DemandFormProps) {
+  const defaultCommodityId =
+    initialCommodityId &&
+    commodities.some((item) => item.id === initialCommodityId)
+      ? initialCommodityId
+      : (commodities[0]?.id ?? "");
   const [role, setRole] = useState<DemandRole>("demand");
-  const [commodityId, setCommodityId] = useState<string>(commodities[0]?.id ?? "");
+  const [commodityId, setCommodityId] = useState<string>(defaultCommodityId);
   const [dismissedSubmission, setDismissedSubmission] = useState<string | null>(null);
   const [state, formAction, isPending] = useActionState(
     submitDemandAction,
@@ -221,8 +228,8 @@ export function DemandForm({
                 ? "bergabung ke Pool Permintaan yang sesuai."
                 : "diteruskan ke jaringan supplier untuk pool ini."}
             </p>
-            <Link className="sheet-primary" href="/beranda">
-              Kembali ke Beranda
+            <Link className="sheet-primary" href={`/pool/${state.success.poolId}`}>
+              Lihat posisi di Detail Pool
             </Link>
             <button
               className="sheet-secondary"
