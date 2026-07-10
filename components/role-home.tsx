@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 import { logoutAction } from "@/app/actions/auth";
 import { BrandMark } from "@/components/brand-mark";
 import type { AuthContext } from "@/lib/auth";
@@ -59,6 +61,13 @@ export function RoleHome({ auth }: RoleHomeProps) {
             </p>
           </div>
         </article>
+
+        {!isAdmin ? (
+          <Link className="primary-link" href="/ajukan">
+            <span aria-hidden="true">+</span>
+            Ajukan Kebutuhan
+          </Link>
+        ) : null}
       </section>
     </main>
   );

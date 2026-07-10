@@ -8,6 +8,19 @@ export type DevCooperative = {
   isProducer: boolean;
 };
 
+export type DevCommodity = {
+  id: "beras" | "minyak_kita" | "gula" | "telur";
+  nama: string;
+  satuan: "kg" | "liter";
+};
+
+export const devCommodities: readonly DevCommodity[] = [
+  { id: "beras", nama: "Beras Medium", satuan: "kg" },
+  { id: "minyak_kita", nama: "MinyaKita", satuan: "liter" },
+  { id: "gula", nama: "Gula Pasir", satuan: "kg" },
+  { id: "telur", nama: "Telur Ayam", satuan: "kg" },
+] as const;
+
 export const devCooperatives: readonly DevCooperative[] = [
   {
     id: "10000000-0000-4000-8000-000000000001",

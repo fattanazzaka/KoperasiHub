@@ -347,6 +347,336 @@ a:focus-visible {
   font-size: 13px;
 }
 
+.primary-link,
+.sheet-primary {
+  display: inline-flex;
+  min-height: 48px;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border-radius: 8px;
+  color: #fff;
+  background: var(--merah);
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 150ms ease;
+}
+
+.primary-link {
+  margin-top: 20px;
+  padding: 0 20px;
+}
+
+.primary-link span {
+  font-size: 22px;
+  font-weight: 400;
+  line-height: 1;
+}
+
+.primary-link:hover,
+.sheet-primary:hover {
+  background: var(--merah-tua);
+}
+
+.form-page {
+  min-height: 100vh;
+  padding-bottom: 48px;
+}
+
+.form-header {
+  position: sticky;
+  z-index: 10;
+  top: 0;
+  display: flex;
+  height: 60px;
+  align-items: center;
+  gap: 10px;
+  padding: 0 16px;
+  border-bottom: 1px solid rgb(92 101 112 / 15%);
+  background: rgb(255 255 255 / 96%);
+  backdrop-filter: blur(12px);
+}
+
+.form-header a {
+  display: inline-flex;
+  width: 44px;
+  height: 44px;
+  align-items: center;
+  justify-content: center;
+  margin-left: -10px;
+  border-radius: 8px;
+  color: var(--tinta);
+}
+
+.form-header a:hover {
+  background: rgb(92 101 112 / 8%);
+}
+
+.form-header svg {
+  width: 22px;
+  fill: none;
+  stroke: currentcolor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2;
+}
+
+.form-header h1 {
+  margin: 0;
+  font-family: "Plus Jakarta Sans Variable", "Plus Jakarta Sans", sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.form-content {
+  width: min(100% - 32px, 520px);
+  margin: 0 auto;
+  padding-top: 24px;
+}
+
+.demand-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.role-segment {
+  display: flex;
+  margin: 0;
+  padding: 3px;
+  border: 0;
+  border-radius: 8px;
+  background: rgb(92 101 112 / 12%);
+}
+
+.role-segment button {
+  min-height: 40px;
+  flex: 1;
+  border: 0;
+  border-radius: 6px;
+  color: var(--abu);
+  background: transparent;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: color 150ms ease, background 150ms ease, box-shadow 150ms ease;
+}
+
+.role-segment button.is-active {
+  color: var(--merah);
+  background: var(--kartu);
+  box-shadow: 0 1px 2px rgb(27 31 36 / 8%);
+}
+
+.field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  color: var(--tinta);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.field-group input,
+.field-group select {
+  width: 100%;
+  height: 44px;
+  padding: 0 12px;
+  border: 1px solid rgb(92 101 112 / 35%);
+  border-radius: 8px;
+  color: var(--tinta);
+  background: var(--kartu);
+  font-size: 15px;
+  font-variant-numeric: tabular-nums;
+}
+
+.field-group input:hover:not(:read-only),
+.field-group select:hover {
+  border-color: rgb(92 101 112 / 65%);
+}
+
+.field-group input:read-only {
+  color: var(--abu);
+  background: rgb(92 101 112 / 6%);
+}
+
+.field-group input[aria-invalid="true"],
+.field-group select[aria-invalid="true"] {
+  border-color: var(--merah);
+}
+
+.field-help {
+  color: var(--abu);
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.5;
+}
+
+.field-error {
+  margin: 0;
+  color: var(--merah-tua);
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.volume-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 110px;
+  gap: 10px;
+}
+
+.currency-input {
+  display: flex;
+  height: 44px;
+  align-items: center;
+  border: 1px solid rgb(92 101 112 / 35%);
+  border-radius: 8px;
+  background: var(--kartu);
+  overflow: hidden;
+}
+
+.currency-input:focus-within {
+  outline: 2px solid var(--merah);
+  outline-offset: 1px;
+}
+
+.currency-input > span {
+  padding-left: 12px;
+  color: var(--abu);
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.currency-input input {
+  height: 42px;
+  padding-left: 6px;
+  border: 0;
+  outline: 0;
+}
+
+.currency-input:has(input[aria-invalid="true"]) {
+  border-color: var(--merah);
+}
+
+.submit-demand {
+  min-height: 48px;
+  margin-top: 4px;
+  border: 0;
+  border-radius: 8px;
+  color: #fff;
+  background: var(--merah);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 150ms ease;
+}
+
+.submit-demand:hover:not(:disabled) {
+  background: var(--merah-tua);
+}
+
+.submit-demand:disabled {
+  cursor: wait;
+  opacity: 0.7;
+}
+
+.confirmation-layer {
+  position: fixed;
+  z-index: 40;
+  inset: 0;
+}
+
+.confirmation-backdrop {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  background: rgb(27 31 36 / 45%);
+  cursor: default;
+  animation: fade-in 150ms ease-out;
+}
+
+.confirmation-sheet {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  width: min(100%, 520px);
+  flex-direction: column;
+  gap: 14px;
+  margin: 0 auto;
+  padding: 16px 20px calc(24px + env(safe-area-inset-bottom));
+  border-radius: 16px 16px 0 0;
+  background: var(--kartu);
+  box-shadow: 0 -12px 40px rgb(27 31 36 / 16%);
+  animation: sheet-up 250ms ease-out;
+}
+
+.sheet-handle {
+  width: 36px;
+  height: 4px;
+  margin: 0 auto 4px;
+  border-radius: 2px;
+  background: rgb(92 101 112 / 30%);
+}
+
+.confirmation-sheet .eyebrow {
+  margin-bottom: -8px;
+  color: var(--merah);
+}
+
+.confirmation-sheet h2 {
+  margin: 0;
+  font-family: "Plus Jakarta Sans Variable", "Plus Jakarta Sans", sans-serif;
+  font-size: 18px;
+  line-height: 1.4;
+}
+
+.confirmation-summary {
+  margin: 0;
+  padding: 14px;
+  border-radius: 8px;
+  color: var(--abu);
+  background: rgb(92 101 112 / 7%);
+  font-size: 14px;
+  line-height: 1.6;
+  font-variant-numeric: tabular-nums;
+}
+
+.sheet-primary {
+  padding: 0 16px;
+}
+
+.sheet-secondary {
+  min-height: 44px;
+  border: 0;
+  border-radius: 8px;
+  color: var(--abu);
+  background: transparent;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.sheet-secondary:hover {
+  background: rgb(92 101 112 / 8%);
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes sheet-up {
+  from {
+    transform: translateY(100%);
+  }
+}
+
 @media (max-width: 640px) {
   .login-page {
     align-items: flex-start;
@@ -364,6 +694,11 @@ a:focus-visible {
 
   .access-card {
     padding: 20px;
+  }
+
+  .primary-link {
+    display: flex;
+    width: 100%;
   }
 }
 
