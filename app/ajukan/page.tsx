@@ -44,7 +44,7 @@ export default async function SubmitDemandPage({
           commodities={devCommodities}
           cooperativeName={auth.cooperative.nama}
           wilayah={auth.cooperative.kabupaten}
-          initialCommodityId={commodity}
+          initialCommodityId={commodity ?? "minyak_kita"}
         />
       </section>
     </main>

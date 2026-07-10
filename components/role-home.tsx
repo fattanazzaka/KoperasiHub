@@ -74,6 +74,9 @@ export function RoleHome({ auth }: RoleHomeProps) {
             <Link className="secondary-link" href="/alokasi">
               Alokasi Saya
             </Link>
+            <Link className="secondary-link" href="/settlement">
+              Net Settlement
+            </Link>
           </div>
         ) : null}
       </section>

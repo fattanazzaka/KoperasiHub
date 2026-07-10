@@ -1,4 +1,4 @@
--- supabase/seed-demo.sql — Track B
+-- supabase/seed-demo.sql
 -- =====================================================================================
 -- Koreografi demo KoperasiHub (angka DIBEKUKAN di docs/07-angka-demo-final.md).
 -- Klaster: Kota Serang, Banten · Hero: MinyaKita · Cross-supply: telur Cilegon.
@@ -40,7 +40,7 @@ insert into public.cooperatives
    volume_transaksi, nilai_transaksi, pembangunan_gerai_pct, simkopdes_verified,
    reputation_score, is_producer)
 values
-  ('DEMO-CIPARE','KDMP Cipare','Cipare','Serang','KOTA SERANG','Banten',240,
+  ('DEMO-CIPARE','KDMP Cipare','Cipare','Serang','Kota Serang','Banten',240,
      true,true,'diverifikasi',24000000,36000000,9600,120000000,95,true,88,false),
   ('KOP-315C5EFCC96D','KDMP Kaligandu','Kaligandu','Serang','KOTA SERANG','Banten',172,
      true,true,'diverifikasi',17200000,25800000,6880,86000000,90,true,84,false),
@@ -59,6 +59,12 @@ values
   ('DEMO-PONTANG','KDMP Pontang','Pontang','Pontang','KAB. SERANG','Banten',280,
      true,true,'diverifikasi',28000000,42000000,11200,140000000,90,true,85,false)
 on conflict (koperasi_ref) do nothing;
+
+-- Keep the jury profile aligned with the canonical pool region. This explicit update
+-- also repairs environments seeded before the region naming was normalized.
+update public.cooperatives
+set kabupaten = 'Kota Serang'
+where koperasi_ref = 'DEMO-CIPARE';
 
 -- --- Supplier ----------------------------------------------------------------------
 insert into public.suppliers (nama, tipe, cooperative_id, lokasi) values
@@ -168,7 +174,7 @@ where a.koperasi_ref = 'KOP-0008016CB39E'   -- Cilegon
 commit;
 
 -- =====================================================================================
--- CATATAN AKUN (langkah terpisah — perlu Supabase Auth, dikerjakan Zaka/Track A):
+-- CATATAN AKUN (langkah terpisah — perlu Supabase Auth):
 --   1. Di Supabase Dashboard > Authentication, buat 2 user:
 --        juri@koperasihub.id  / demo123
 --        admin@koperasihub.id / demo123
@@ -178,5 +184,5 @@ commit;
 --             (select id from public.cooperatives where koperasi_ref='DEMO-CIPARE'),
 --             'koperasi','Pengurus KDMP Cipare'),
 --          ('<UID_ADMIN>', null, 'admin', 'Admin Hub');
---   (Track B akan menyiapkan scripts/03-seed-auth.ts untuk mengotomatiskan ini.)
+--   scripts/03-seed-auth.ts mengotomatiskan langkah ini untuk environment demo.
 -- =====================================================================================

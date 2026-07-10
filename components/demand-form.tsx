@@ -26,6 +26,36 @@ const initialState: DemandActionState = {
   success: null,
 };
 
+const commodityDefaults: Record<
+  string,
+  {
+    demandVolume: number;
+    demandPrice: number;
+    supplyVolume: number;
+    supplyPrice: number;
+  }
+> = {
+  minyak_kita: {
+    demandVolume: 400,
+    demandPrice: 15_700,
+    supplyVolume: 1_000,
+    supplyPrice: 13_500,
+  },
+  telur: {
+    demandVolume: 150,
+    demandPrice: 28_000,
+    supplyVolume: 800,
+    supplyPrice: 25_000,
+  },
+};
+
+const fallbackDefaults = {
+  demandVolume: 800,
+  demandPrice: 15_358,
+  supplyVolume: 1_500,
+  supplyPrice: 14_700,
+};
+
 export function DemandForm({
   commodities,
   cooperativeName,
@@ -52,6 +82,7 @@ export function DemandForm({
     state.success && state.success.submissionId !== dismissedSubmission,
   );
   const isDemand = role === "demand";
+  const defaults = commodityDefaults[commodityId] ?? fallbackDefaults;
 
   return (
     <>
@@ -109,14 +140,16 @@ export function DemandForm({
           <label className="field-group">
             <span>{isDemand ? "Volume kebutuhan" : "Kapasitas suplai"}</span>
             <input
-              key={role}
+              key={`${role}-${commodityId}`}
               name="volume"
               type="number"
               inputMode="numeric"
               min="1"
               max="1000000"
               step="1"
-              defaultValue={isDemand ? "800" : "1500"}
+              defaultValue={
+                isDemand ? defaults.demandVolume : defaults.supplyVolume
+              }
               aria-invalid={Boolean(state.fieldErrors.volume)}
               aria-describedby={state.fieldErrors.volume ? "volume-error" : undefined}
               required
@@ -134,7 +167,7 @@ export function DemandForm({
           </label>
         </div>
 
-        <label className="field-group" key={`price-${role}`}>
+        <label className="field-group" key={`price-${role}-${commodityId}`}>
           <span>
             {isDemand ? "Harga beli Anda saat ini" : "Harga penawaran Anda"} /
             {commodity?.satuan ?? "unit"}
@@ -148,7 +181,7 @@ export function DemandForm({
               min="1"
               max="1000000000"
               step="1"
-              defaultValue={isDemand ? "15358" : "14700"}
+              defaultValue={isDemand ? defaults.demandPrice : defaults.supplyPrice}
               aria-invalid={Boolean(state.fieldErrors.price)}
               aria-describedby={state.fieldErrors.price ? "price-error" : "price-help"}
               required

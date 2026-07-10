@@ -2226,3 +2226,119 @@ a:focus-visible {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* --- Panel Net Settlement (US-08) ------------------------------------------------- */
+.settlement-content {
+  width: min(100% - 32px, 940px);
+  margin: 0 auto;
+  padding: 44px 0 64px;
+}
+
+.settlement-akad {
+  display: inline-flex;
+  min-height: 34px;
+  flex: 0 0 auto;
+  align-items: center;
+  padding: 7px 12px;
+  border: 1px solid rgb(92 101 112 / 20%);
+  border-radius: 999px;
+  color: var(--abu);
+  background: rgb(92 101 112 / 6%);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+
+.settlement-board {
+  display: grid;
+  gap: 14px;
+  margin-top: 32px;
+}
+
+.settlement-leg {
+  padding: 20px 22px;
+  border: 1px solid rgb(92 101 112 / 16%);
+  border-radius: 12px;
+  background: var(--kartu);
+  box-shadow: 0 8px 24px rgb(27 31 36 / 4%);
+}
+
+.settlement-leg__route {
+  margin: 0;
+  font-size: 15px;
+}
+
+.settlement-leg__commodity {
+  margin: 4px 0 0;
+  color: var(--abu);
+  font-size: 13px;
+}
+
+.settlement-leg__amount {
+  margin: 12px 0 0;
+  font-family: "Plus Jakarta Sans Variable", "Plus Jakarta Sans", sans-serif;
+  font-size: 26px;
+  font-weight: 800;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.settlement-leg__caption {
+  margin: 6px 0 0;
+  color: var(--abu);
+  font-size: 12px;
+}
+
+.settlement-net {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 22px;
+  border: 2px solid var(--merah);
+  border-radius: 12px;
+  background: rgb(200 30 30 / 4%);
+  text-align: center;
+}
+
+.settlement-net__label {
+  color: var(--merah-tua);
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.settlement-net__value {
+  font-family: "Plus Jakarta Sans Variable", "Plus Jakarta Sans", sans-serif;
+  font-size: clamp(30px, 6vw, 40px);
+  font-weight: 800;
+  line-height: 1.05;
+  font-variant-numeric: tabular-nums;
+}
+
+.settlement-net__flow {
+  color: var(--tinta);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.settlement-footnote {
+  max-width: 760px;
+  margin: 24px 0 0;
+  color: var(--abu);
+  font-size: 14px;
+  line-height: 1.65;
+}
+
+@media (min-width: 820px) {
+  .settlement-board {
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: 18px;
+  }
+
+  .settlement-net {
+    min-width: 220px;
+  }
+}

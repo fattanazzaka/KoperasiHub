@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 import { logoutAction } from "@/app/actions/auth";
 import { AdminPoolControl } from "@/components/admin-pool-control";
 import { BrandMark } from "@/components/brand-mark";
@@ -29,6 +31,9 @@ export function AdminHub({ pools, issuedPoolIds }: AdminHubProps) {
           <span>KoperasiHub</span>
         </div>
         <div className="admin-header__actions">
+          <Link className="text-button" href="/settlement">
+            Net Settlement
+          </Link>
           <span className="admin-role-badge">Admin Hub</span>
           <form action={logoutAction}>
             <button className="text-button" type="submit">
