@@ -24,6 +24,7 @@ export type PoolUserEntry = {
 
 export type PoolProgress = {
   targetTier: PoolTier | null;
+  eligibleTier: PoolTier | null;
   targetReached: boolean;
   newlyReachedTierId: string | null;
   progressPercent: number;

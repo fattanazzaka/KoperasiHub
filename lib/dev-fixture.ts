@@ -4,6 +4,7 @@ export type DevCooperative = {
   desa: string;
   kabupaten: string;
   provinsi: string;
+  nib: string;
   simkopdesVerified: boolean;
   isProducer: boolean;
 };
@@ -44,6 +45,15 @@ export type DevPoolFixture = {
   windowOption: "week" | "two-weeks" | "month";
   baseTotalVolume: number;
   baseParticipantCount: number;
+  baseMembers: readonly DevPoolMember[];
+};
+
+export type DevPoolMember = {
+  cooperativeId: string;
+  name: string;
+  nib: string;
+  volume: number;
+  baselinePrice: number;
 };
 
 export const devCommodities: readonly DevCommodity[] = [
@@ -171,6 +181,57 @@ export const devPools: readonly DevPoolFixture[] = [
     windowOption: "week",
     baseTotalVolume: 4_250,
     baseParticipantCount: 7,
+    baseMembers: [
+      {
+        cooperativeId: "10000000-0000-4000-8000-000000000002",
+        name: "KDMP Gemolong",
+        nib: "0220110912345",
+        volume: 700,
+        baselinePrice: 15_200,
+      },
+      {
+        cooperativeId: "10000000-0000-4000-8000-000000000003",
+        name: "KDMP Masaran",
+        nib: "0220110956789",
+        volume: 650,
+        baselinePrice: 15_300,
+      },
+      {
+        cooperativeId: "20000000-0000-4000-8000-000000000001",
+        name: "KDMP Plupuh",
+        nib: "0220110934567",
+        volume: 600,
+        baselinePrice: 15_400,
+      },
+      {
+        cooperativeId: "20000000-0000-4000-8000-000000000002",
+        name: "KDMP Sidoharjo",
+        nib: "0220110976543",
+        volume: 600,
+        baselinePrice: 15_250,
+      },
+      {
+        cooperativeId: "20000000-0000-4000-8000-000000000003",
+        name: "KDMP Gondang",
+        nib: "0220110924680",
+        volume: 550,
+        baselinePrice: 15_500,
+      },
+      {
+        cooperativeId: "20000000-0000-4000-8000-000000000004",
+        name: "KDMP Sambungmacan",
+        nib: "0220110913579",
+        volume: 600,
+        baselinePrice: 15_350,
+      },
+      {
+        cooperativeId: "20000000-0000-4000-8000-000000000005",
+        name: "KDMP Sumberlawang",
+        nib: "0220110986420",
+        volume: 550,
+        baselinePrice: 15_450,
+      },
+    ],
   },
   {
     id: "pool-minyak-kudus",
@@ -179,6 +240,36 @@ export const devPools: readonly DevPoolFixture[] = [
     windowOption: "two-weeks",
     baseTotalVolume: 800,
     baseParticipantCount: 4,
+    baseMembers: [
+      {
+        cooperativeId: "10000000-0000-4000-8000-000000000004",
+        name: "KDMP Kaliwungu",
+        nib: "0310110912345",
+        volume: 220,
+        baselinePrice: 15_700,
+      },
+      {
+        cooperativeId: "21000000-0000-4000-8000-000000000001",
+        name: "KDMP Jekulo",
+        nib: "0310110956789",
+        volume: 200,
+        baselinePrice: 15_600,
+      },
+      {
+        cooperativeId: "21000000-0000-4000-8000-000000000002",
+        name: "KDMP Mejobo",
+        nib: "0310110934567",
+        volume: 180,
+        baselinePrice: 15_700,
+      },
+      {
+        cooperativeId: "21000000-0000-4000-8000-000000000003",
+        name: "KDMP Undaan",
+        nib: "0310110976543",
+        volume: 200,
+        baselinePrice: 15_650,
+      },
+    ],
   },
   {
     id: "pool-telur-semarang",
@@ -187,6 +278,36 @@ export const devPools: readonly DevPoolFixture[] = [
     windowOption: "two-weeks",
     baseTotalVolume: 600,
     baseParticipantCount: 4,
+    baseMembers: [
+      {
+        cooperativeId: "22000000-0000-4000-8000-000000000001",
+        name: "KDMP Gunungpati",
+        nib: "0330110912345",
+        volume: 160,
+        baselinePrice: 28_000,
+      },
+      {
+        cooperativeId: "22000000-0000-4000-8000-000000000002",
+        name: "KDMP Mijen",
+        nib: "0330110956789",
+        volume: 150,
+        baselinePrice: 27_800,
+      },
+      {
+        cooperativeId: "22000000-0000-4000-8000-000000000003",
+        name: "KDMP Ngaliyan",
+        nib: "0330110934567",
+        volume: 140,
+        baselinePrice: 28_200,
+      },
+      {
+        cooperativeId: "22000000-0000-4000-8000-000000000004",
+        name: "KDMP Tembalang",
+        nib: "0330110976543",
+        volume: 150,
+        baselinePrice: 28_100,
+      },
+    ],
   },
 ] as const;
 
@@ -197,6 +318,7 @@ export const devCooperatives: readonly DevCooperative[] = [
     desa: "Karangmalang",
     kabupaten: "Sragen",
     provinsi: "Jawa Tengah",
+    nib: "0220110987654",
     simkopdesVerified: true,
     isProducer: false,
   },
@@ -206,6 +328,7 @@ export const devCooperatives: readonly DevCooperative[] = [
     desa: "Gemolong",
     kabupaten: "Sragen",
     provinsi: "Jawa Tengah",
+    nib: "0220110912345",
     simkopdesVerified: true,
     isProducer: false,
   },
@@ -215,6 +338,7 @@ export const devCooperatives: readonly DevCooperative[] = [
     desa: "Masaran",
     kabupaten: "Sragen",
     provinsi: "Jawa Tengah",
+    nib: "0220110956789",
     simkopdesVerified: true,
     isProducer: false,
   },
@@ -224,6 +348,7 @@ export const devCooperatives: readonly DevCooperative[] = [
     desa: "Kaliwungu",
     kabupaten: "Kudus",
     provinsi: "Jawa Tengah",
+    nib: "0310110912345",
     simkopdesVerified: true,
     isProducer: false,
   },
@@ -233,6 +358,7 @@ export const devCooperatives: readonly DevCooperative[] = [
     desa: "Ringinrejo",
     kabupaten: "Blitar",
     provinsi: "Jawa Timur",
+    nib: "0350110912345",
     simkopdesVerified: true,
     isProducer: true,
   },

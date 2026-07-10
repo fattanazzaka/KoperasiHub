@@ -71,6 +71,9 @@ export function RoleHome({ auth }: RoleHomeProps) {
             <Link className="secondary-link" href="/pool">
               Lihat Pool Aktif
             </Link>
+            <Link className="secondary-link" href="/alokasi">
+              Alokasi Saya
+            </Link>
           </div>
         ) : null}
       </section>

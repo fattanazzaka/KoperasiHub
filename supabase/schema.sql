@@ -207,12 +207,35 @@ as $$
   group by pool.id
 $$;
 
+-- Exposes allocation totals without revealing participant-level rows protected by RLS.
+create or replace function public.get_allocation_stats()
+returns table (
+  pool_id uuid,
+  total_volume bigint,
+  total_savings bigint
+)
+language sql
+stable
+security definer
+set search_path = ''
+as $$
+  select
+    allocation.pool_id,
+    coalesce(sum(allocation.volume), 0)::bigint as total_volume,
+    coalesce(sum(allocation.hemat_rp), 0)::bigint as total_savings
+  from public.allocations as allocation
+  where auth.uid() is not null
+  group by allocation.pool_id
+$$;
+
 revoke all on function public.current_cooperative_id() from public;
 revoke all on function public.is_admin() from public;
 revoke all on function public.get_pool_stats() from public;
+revoke all on function public.get_allocation_stats() from public;
 grant execute on function public.current_cooperative_id() to authenticated;
 grant execute on function public.is_admin() to authenticated;
 grant execute on function public.get_pool_stats() to authenticated;
+grant execute on function public.get_allocation_stats() to authenticated;
 
 alter table public.cooperatives enable row level security;
 alter table public.users enable row level security;
@@ -379,5 +402,6 @@ to service_role;
 grant execute on function public.current_cooperative_id() to service_role;
 grant execute on function public.is_admin() to service_role;
 grant execute on function public.get_pool_stats() to service_role;
+grant execute on function public.get_allocation_stats() to service_role;
 
 commit;

@@ -1189,6 +1189,429 @@ a:focus-visible {
   background: var(--merah-tua);
 }
 
+.admin-content,
+.allocation-content {
+  width: min(100% - 32px, 900px);
+  margin: 0 auto;
+  padding: 36px 0 56px;
+}
+
+.admin-content .identity-row h1,
+.allocation-intro h2 {
+  margin: 0;
+  font-family: "Plus Jakarta Sans Variable", "Plus Jakarta Sans", sans-serif;
+  font-size: 28px;
+  font-weight: 800;
+}
+
+.admin-ready-count,
+.allocation-status {
+  padding: 6px 9px;
+  border-radius: 999px;
+  color: var(--merah);
+  background: rgb(200 30 30 / 8%);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.admin-pool-list,
+.allocation-list {
+  display: grid;
+  gap: 14px;
+  margin-top: 24px;
+}
+
+.admin-pool-list {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.admin-pool-card,
+.allocation-card,
+.allocation-empty {
+  padding: 20px;
+  border: 1px solid rgb(92 101 112 / 18%);
+  border-radius: 10px;
+  background: var(--kartu);
+}
+
+.admin-pool-card__info,
+.admin-pool-card__tier {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.admin-pool-card h2 {
+  margin: 0;
+  font-family: "Plus Jakarta Sans Variable", "Plus Jakarta Sans", sans-serif;
+  font-size: 18px;
+}
+
+.admin-pool-card__info p {
+  margin: 3px 0 0;
+  color: var(--abu);
+  font-size: 13px;
+}
+
+.admin-pool-card__info > strong {
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.admin-pool-card__tier {
+  margin-top: 16px;
+  padding: 12px;
+  border-radius: 8px;
+  color: var(--abu);
+  background: rgb(92 101 112 / 7%);
+  font-size: 13px;
+}
+
+.admin-pool-card__tier strong {
+  color: var(--tinta);
+  font-variant-numeric: tabular-nums;
+}
+
+.admin-pool-card form,
+.admin-po-link {
+  display: block;
+  margin-top: 14px;
+}
+
+.admin-pool-card form button,
+.admin-po-link {
+  width: 100%;
+  min-height: 46px;
+  border: 0;
+  border-radius: 8px;
+  color: #fff;
+  background: var(--merah);
+  font-weight: 600;
+  text-align: center;
+  cursor: pointer;
+}
+
+.admin-po-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+}
+
+.admin-pool-card form button:disabled {
+  color: var(--abu);
+  background: rgb(92 101 112 / 12%);
+  cursor: not-allowed;
+}
+
+.admin-pool-card > .field-error {
+  margin-top: 10px;
+}
+
+.po-page {
+  min-height: 100vh;
+  padding-bottom: 60px;
+}
+
+.po-toolbar {
+  position: sticky;
+  z-index: 20;
+  top: 0;
+  display: flex;
+  height: 60px;
+  align-items: center;
+  gap: 12px;
+  padding: 0 16px;
+  border-bottom: 1px solid rgb(92 101 112 / 15%);
+  background: var(--kartu);
+}
+
+.po-toolbar > a {
+  display: flex;
+  width: 44px;
+  height: 44px;
+  align-items: center;
+  justify-content: center;
+  margin-left: -10px;
+  border-radius: 8px;
+  color: var(--tinta);
+}
+
+.po-toolbar svg {
+  width: 22px;
+  fill: none;
+  stroke: currentcolor;
+  stroke-width: 2;
+}
+
+.po-toolbar > strong {
+  flex: 1;
+}
+
+.print-button {
+  min-height: 44px;
+  padding: 0 16px;
+  border: 0;
+  border-radius: 8px;
+  color: #fff;
+  background: var(--merah);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.po-document {
+  width: min(100% - 32px, 900px);
+  margin: 24px auto 0;
+  padding: 40px 36px;
+  border: 1px solid rgb(92 101 112 / 20%);
+  background: var(--kartu);
+  font-variant-numeric: tabular-nums;
+}
+
+.po-document__heading {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding-bottom: 16px;
+  border-bottom: 3px double var(--tinta);
+}
+
+.po-document__heading h1 {
+  margin: 0;
+  font-family: "Plus Jakarta Sans Variable", "Plus Jakarta Sans", sans-serif;
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+}
+
+.po-document__heading p {
+  margin: 3px 0 0;
+  color: var(--abu);
+  font-size: 13px;
+}
+
+.po-document__meta {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+  margin-top: 20px;
+  font-size: 13px;
+}
+
+.po-document__meta dl {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+}
+
+.po-document__meta dl > div {
+  display: grid;
+  grid-template-columns: 110px 1fr;
+  gap: 8px;
+}
+
+.po-document__meta dt {
+  color: var(--abu);
+}
+
+.po-document__meta dd {
+  margin: 0;
+  font-weight: 600;
+}
+
+.po-supplier {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 12px;
+  border: 1px solid rgb(92 101 112 / 25%);
+  border-radius: 8px;
+}
+
+.po-supplier > span {
+  color: var(--abu);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.po-supplier strong {
+  font-size: 14px;
+}
+
+.po-supplier small {
+  color: var(--abu);
+}
+
+.po-supplier p {
+  margin: 3px 0 0;
+}
+
+.po-table-wrap {
+  margin-top: 24px;
+  overflow-x: auto;
+}
+
+.po-table-wrap table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+.po-table-wrap th,
+.po-table-wrap td {
+  padding: 8px 9px;
+  border: 1px solid rgb(92 101 112 / 35%);
+  text-align: left;
+}
+
+.po-table-wrap th {
+  background: rgb(92 101 112 / 7%);
+  font-weight: 600;
+}
+
+.po-table-wrap th:nth-child(n + 3),
+.po-table-wrap td:nth-child(n + 3) {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.po-table-wrap .money-saved {
+  color: var(--hijau-hemat);
+  font-weight: 600;
+}
+
+.po-total-row {
+  font-weight: 700;
+}
+
+.po-note {
+  margin: 18px 0 0;
+  color: var(--abu);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.po-signatures {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 30px;
+  margin-top: 38px;
+  font-size: 13px;
+}
+
+.po-signatures > div {
+  display: flex;
+  min-height: 90px;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.po-signatures span {
+  color: var(--abu);
+}
+
+.po-signatures strong {
+  width: fit-content;
+  padding-top: 6px;
+  border-top: 1px solid var(--tinta);
+}
+
+.allocation-page {
+  min-height: 100vh;
+}
+
+.allocation-intro h2 {
+  font-size: 24px;
+}
+
+.allocation-card__heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.allocation-card__heading h2 {
+  margin: 0;
+  font-family: "Plus Jakarta Sans Variable", "Plus Jakarta Sans", sans-serif;
+  font-size: 20px;
+}
+
+.allocation-card__heading > div > span {
+  display: block;
+  margin-top: 3px;
+  color: var(--abu);
+  font-size: 13px;
+}
+
+.allocation-metrics {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  margin: 20px 0 0;
+  border: 1px solid rgb(92 101 112 / 15%);
+  border-radius: 8px;
+  background: rgb(92 101 112 / 15%);
+  overflow: hidden;
+}
+
+.allocation-metrics > div {
+  padding: 14px;
+  background: var(--kartu);
+}
+
+.allocation-metrics dt {
+  color: var(--abu);
+  font-size: 12px;
+}
+
+.allocation-metrics dd {
+  margin: 5px 0 0;
+  font-family: "Plus Jakarta Sans Variable", "Plus Jakarta Sans", sans-serif;
+  font-size: 17px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.allocation-metrics .allocation-savings dd {
+  color: var(--hijau-hemat);
+}
+
+.cluster-summary {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 14px;
+  padding: 12px;
+  border-radius: 8px;
+  color: var(--abu);
+  background: rgb(92 101 112 / 7%);
+  font-size: 13px;
+}
+
+.cluster-summary strong {
+  color: var(--tinta);
+  font-variant-numeric: tabular-nums;
+}
+
+.allocation-empty {
+  margin-top: 24px;
+  text-align: center;
+}
+
+.allocation-empty h2,
+.allocation-empty p {
+  margin: 0;
+}
+
+.allocation-empty p {
+  margin-top: 8px;
+  color: var(--abu);
+}
+
 @keyframes fade-in {
   from {
     opacity: 0;
@@ -1255,6 +1678,69 @@ a:focus-visible {
 
   .tier-step > p {
     font-size: 16px;
+  }
+
+  .admin-content,
+  .allocation-content {
+    padding-top: 24px;
+  }
+
+  .admin-pool-list {
+    grid-template-columns: 1fr;
+  }
+
+  .po-document {
+    width: calc(100% - 20px);
+    padding: 24px 16px;
+  }
+
+  .po-document__meta,
+  .po-signatures,
+  .allocation-metrics {
+    grid-template-columns: 1fr;
+  }
+
+  .allocation-metrics {
+    gap: 0;
+  }
+
+  .allocation-metrics > div + div {
+    border-top: 1px solid rgb(92 101 112 / 15%);
+  }
+
+  .cluster-summary {
+    flex-direction: column;
+  }
+}
+
+@media print {
+  @page {
+    size: A4 landscape;
+    margin: 12mm;
+  }
+
+  body,
+  .po-page {
+    background: #fff;
+  }
+
+  [data-print-hidden] {
+    display: none !important;
+  }
+
+  .po-page {
+    padding: 0;
+  }
+
+  .po-document {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+
+  .po-table-wrap {
+    overflow: visible;
   }
 }
 

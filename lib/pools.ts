@@ -4,6 +4,7 @@ import type { AuthContext } from "@/lib/auth";
 import { isSupabaseConfigured } from "@/lib/config";
 import { resolveDemandWindow } from "@/lib/demand";
 import { getDemoDemands, type DemoDemand } from "@/lib/demo-demands";
+import { getDemoPurchaseOrders } from "@/lib/demo-purchase-orders";
 import {
   devCommodities,
   devCommodityMarkets,
@@ -80,6 +81,7 @@ function deriveProgress(
   if (!targetTier) {
     return {
       targetTier: null,
+      eligibleTier: null,
       targetReached: false,
       newlyReachedTierId: null,
       progressPercent: 0,
@@ -91,6 +93,7 @@ function deriveProgress(
 
   return {
     targetTier,
+    eligibleTier: currentTier ?? null,
     targetReached,
     newlyReachedTierId: newlyReached?.id ?? null,
     progressPercent: targetReached
@@ -246,7 +249,10 @@ function createDynamicDevPoolRecord(
 }
 
 async function getDevPoolDetails(): Promise<PoolDetail[]> {
-  const demands = await getDemoDemands();
+  const [demands, purchaseOrders] = await Promise.all([
+    getDemoDemands(),
+    getDemoPurchaseOrders(),
+  ]);
   const fixtureDetails = devPools.map((fixture) =>
     buildPoolDetail(createDevPoolRecord(fixture, demands)),
   );
@@ -282,7 +288,11 @@ async function getDevPoolDetails(): Promise<PoolDetail[]> {
     ),
   );
 
-  return [...fixtureDetails, ...dynamicDetails];
+  const issuedPoolIds = new Set(purchaseOrders.map((order) => order.poolId));
+
+  return [...fixtureDetails, ...dynamicDetails].map((pool) =>
+    issuedPoolIds.has(pool.id) ? { ...pool, status: "po_issued" } : pool,
+  );
 }
 
 function normalizeSupplierType(value: string): DevSupplierType {
@@ -292,10 +302,6 @@ function normalizeSupplierType(value: string): DevSupplierType {
 async function getSupabasePoolDetails(
   auth: AuthContext,
 ): Promise<PoolDetail[]> {
-  if (!auth.cooperative) {
-    return [];
-  }
-
   const supabase = await createSupabaseServerClient();
   const { data: pools, error: poolsError } = await supabase
     .from("pools")
@@ -310,22 +316,26 @@ async function getSupabasePoolDetails(
 
   const poolIds = pools.map((pool) => pool.id);
   const commodityIds = [...new Set(pools.map((pool) => pool.commodity_id))];
-  const [{ data: stats }, { data: tierRows }, { data: userDemands }] =
-    await Promise.all([
-      supabase.rpc("get_pool_stats"),
-      supabase
-        .from("price_tiers")
-        .select(
-          "id, commodity_id, nama_tier, min_volume, harga_per_unit, suppliers(id, nama, tipe, lokasi)",
-        )
-        .in("commodity_id", commodityIds)
-        .order("min_volume", { ascending: true }),
-      supabase
-        .from("demands")
-        .select("pool_id, role, volume, harga_baseline, harga_penawaran")
-        .eq("cooperative_id", auth.cooperative.id)
-        .in("pool_id", poolIds),
-    ]);
+  const [{ data: stats }, { data: tierRows }] = await Promise.all([
+    supabase.rpc("get_pool_stats"),
+    supabase
+      .from("price_tiers")
+      .select(
+        "id, commodity_id, nama_tier, min_volume, harga_per_unit, suppliers(id, nama, tipe, lokasi)",
+      )
+      .in("commodity_id", commodityIds)
+      .order("min_volume", { ascending: true }),
+  ]);
+  let userDemands: UserDemandRow[] = [];
+
+  if (auth.cooperative) {
+    const { data } = await supabase
+      .from("demands")
+      .select("pool_id, role, volume, harga_baseline, harga_penawaran")
+      .eq("cooperative_id", auth.cooperative.id)
+      .in("pool_id", poolIds);
+    userDemands = (data ?? []) as UserDemandRow[];
+  }
 
   return pools.map((pool) => {
     const commodityRelation = Array.isArray(pool.commodities)
@@ -374,7 +384,7 @@ async function getSupabasePoolDetails(
     const poolStats = ((stats ?? []) as PoolStatsRow[]).find(
       (item) => item.pool_id === pool.id,
     );
-    const entries = ((userDemands ?? []) as UserDemandRow[])
+    const entries = userDemands
       .filter((demand) => demand.pool_id === pool.id)
       .map((demand): PoolUserEntry => ({
         role: demand.role === "supply" ? "supply" : "demand",

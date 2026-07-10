@@ -1,7 +1,9 @@
 import { redirect } from "next/navigation";
 
-import { RoleHome } from "@/components/role-home";
+import { AdminHub } from "@/components/admin-hub";
 import { getAuthContext, getRoleDestination } from "@/lib/auth";
+import { getPoolDetails } from "@/lib/pools";
+import { getIssuedPoolIds } from "@/lib/procurement";
 
 export default async function AdminHubPage() {
   const auth = await getAuthContext();
@@ -14,5 +16,10 @@ export default async function AdminHubPage() {
     redirect(getRoleDestination(auth.role));
   }
 
-  return <RoleHome auth={auth} />;
+  const [pools, issuedPoolIds] = await Promise.all([
+    getPoolDetails(auth),
+    getIssuedPoolIds(),
+  ]);
+
+  return <AdminHub pools={pools} issuedPoolIds={issuedPoolIds} />;
 }
