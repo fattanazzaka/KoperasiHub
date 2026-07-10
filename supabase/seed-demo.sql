@@ -79,8 +79,8 @@ cross join (select id from public.suppliers where nama='PT Distribusi Nusantara'
 -- Telur: tiga label sumber (termurah = koperasi produsen)
 insert into public.price_tiers (supplier_id, commodity_id, nama_tier, min_volume, harga_per_unit)
 values
-  ((select id from public.suppliers where nama='CV Sumber Protein'),'telur','Grosir',500,26500),
-  ((select id from public.suppliers where nama='ID FOOD (Holding Pangan)'),'telur','Kontrak BUMN',500,26000),
+  ((select id from public.suppliers where nama='CV Sumber Protein'),'telur','Grosir',1000,26500),
+  ((select id from public.suppliers where nama='ID FOOD (Holding Pangan)'),'telur','Kontrak BUMN',1000,26000),
   ((select id from public.suppliers where nama='KDMP Cilegon'),'telur','Ternak Anggota',300,25000);
 
 -- --- Pools -------------------------------------------------------------------------

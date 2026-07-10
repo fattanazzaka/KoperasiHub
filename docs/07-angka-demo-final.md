@@ -66,8 +66,8 @@ admin agar agregat terasa nyata. Akun:
 **Telur** (baseline lokal Banten ~28.000; tiga label sumber untuk cross-supply):
 | Supplier | tipe | nama_tier | min_volume | harga/kg |
 |---|---|---|---|---|
-| CV Sumber Protein | distributor | Grosir | 500 kg | 26.500 |
-| ID FOOD (Holding Pangan) | bumn | Kontrak BUMN | 500 kg | 26.000 |
+| CV Sumber Protein | distributor | Grosir | 1.000 kg | 26.500 |
+| ID FOOD (Holding Pangan) | bumn | Kontrak BUMN | 1.000 kg | 26.000 |
 | KDMP Cilegon | koperasi | Ternak Anggota | 300 kg | 25.000 |
 
 → Termurah = **Koperasi Produsen** (bukti visual cross-supply menang).
