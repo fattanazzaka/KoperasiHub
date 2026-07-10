@@ -3,6 +3,7 @@ CLAUDE.md
 node_modules/
 .next/
 out/
+files2
 
 # Local environment files may contain credentials.
 .env*
