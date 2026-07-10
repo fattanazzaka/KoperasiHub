@@ -89,7 +89,7 @@ async function getDemoAuthContext(): Promise<AuthContext | null> {
     return {
       userId: "demo-jury",
       email: process.env.DEMO_JURY_EMAIL ?? "",
-      displayName: "Pengurus KDMP Karangmalang",
+      displayName: `Pengurus ${juryCooperative.nama}`,
       role: "koperasi",
       cooperative: {
         id: juryCooperative.id,

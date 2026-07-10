@@ -35,13 +35,9 @@ function makeSeries(base: number, amp: number): number[] {
   return series;
 }
 
-// Profil default — dipakai koperasi demo mana pun (fixture ATAU Supabase) yang tidak
-// punya entri khusus. Angka dikoreografikan untuk beranda juri (KDMP Karangmalang, Sragen):
-//   beras       → stok ~15 hari + pool Sragen aktif  → kartu "Gabung Pool"
-//   minyak_kita → stok ~6 hari, tanpa pool Sragen    → kartu "Buka Permintaan Pool Baru"
-//                 harga beli terakhir Rp17.060 (p90 data asli) > HET 15.700 → flag HET
-//   telur       → stok ~60 hari                       → tersaring (bukan noise)
-//   gula        → velocity 0 & stok > 0               → tersaring (AC6)
+// Profil default — fallback untuk koperasi mana pun (fixture ATAU Supabase) yang tidak
+// punya entri khusus di INVENTORY_BY_COOPERATIVE. Bauran umum; koreografi demo utama ada
+// pada profil koperasi juri di bawah.
 const DEFAULT_PROFILE: InventoryRecord[] = [
   {
     commodityId: "beras",
@@ -73,9 +69,34 @@ const DEFAULT_PROFILE: InventoryRecord[] = [
   },
 ];
 
-// Entri khusus per koperasi (id → profil). Kosong untuk saat ini: semua koperasi demo
-// memakai DEFAULT_PROFILE; tambah entri di sini bila koreografi butuh variasi.
-const INVENTORY_BY_COOPERATIVE: Record<string, InventoryRecord[]> = {};
+// GOLDEN PATH — koperasi demo (akun juri, KDMP Talun / Blitar / Jawa Timur).
+// DISCLAIMER (ADDENDUM §4.4): snapshot barang_keluar panitia HANYA 1 hari (8 Jul 2026).
+// Deret 90 hari di bawah DISINTESIS deterministik (makeSeries), konsisten dengan bauran
+// produk & harga beli asli koperasi ini. Hanya deret waktu yang sintetis; harga di-anchor
+// ke distribusi asli (MinyaKita p90 Rp17.060 > HET; SPHP/beras median).
+const JURY_COOPERATIVE_ID = "10000000-0000-4000-8000-000000000001";
+
+const INVENTORY_BY_COOPERATIVE: Record<string, InventoryRecord[]> = {
+  [JURY_COOPERATIVE_ID]: [
+    {
+      // MinyaKita: stok menipis ~5-6 hari + harga beli terakhir Rp17.060 (p90 asli, DI ATAS
+      // HET Rp15.700) → kartu rekomendasi HERO + guardrail HET menyala + pool Blitar aktif.
+      commodityId: "minyak_kita",
+      stokSaatIni: 100,
+      dailyOutflows: makeSeries(18, 2),
+      hargaBeliTerakhir: 17_060,
+      qtyBeliTerakhir: 200,
+    },
+    {
+      // Beras: stok menipis, belum ada pool di Blitar → kartu CTA "Buka Permintaan Pool Baru".
+      commodityId: "beras",
+      stokSaatIni: 200,
+      dailyOutflows: makeSeries(40, 4),
+      hargaBeliTerakhir: 15_200,
+      qtyBeliTerakhir: 1_000,
+    },
+  ],
+};
 
 /** Snapshot inventaris koperasi. Selalu mengembalikan data (fallback profil default). */
 export function getInventorySnapshot(cooperativeId: string): InventoryRecord[] {

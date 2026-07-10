@@ -267,78 +267,77 @@ export const devPools: readonly DevPoolFixture[] = [
     ],
   },
   {
-    id: "pool-minyak-kudus",
+    // HERO pool (ADDENDUM §4.5): klaster MinyaKita Jawa Timur, ~75% menuju Ambang Tier D1
+    // (1.500 / 2.000 L). Window "week" = sama dengan default form → klik [Gabung Pool] dari
+    // kartu rekomendasi langsung menambah volume & memicu animasi Tangga Tier (lintas ambang).
+    id: "pool-minyak-jatim",
     commodityId: "minyak_kita",
-    wilayah: "Kudus",
-    windowOption: "two-weeks",
-    baseTotalVolume: 800,
-    baseParticipantCount: 4,
+    wilayah: "Blitar",
+    windowOption: "week",
+    baseTotalVolume: 1_500,
+    baseParticipantCount: 12, // klaster asli 16 koperasi pembeli (§4.5); 12 ditampilkan sbg latar
     baseMembers: [
       {
-        cooperativeId: "10000000-0000-4000-8000-000000000004",
-        name: "KDMP Kaliwungu",
-        nib: "0310110912345",
-        volume: 220,
-        baselinePrice: 15_700,
+        cooperativeId: "35000000-0000-4000-8000-000000000001",
+        name: "KDMP Kanigoro",
+        nib: "3505110912345",
+        volume: 420,
+        baselinePrice: 17_060, // p90 distribusi asli — di atas HET Rp15.700
       },
       {
-        cooperativeId: "21000000-0000-4000-8000-000000000001",
-        name: "KDMP Jekulo",
-        nib: "0310110956789",
-        volume: 200,
-        baselinePrice: 15_600,
+        cooperativeId: "35000000-0000-4000-8000-000000000002",
+        name: "KDMP Wlingi",
+        nib: "3505110956789",
+        volume: 400,
+        baselinePrice: 16_400,
       },
       {
-        cooperativeId: "21000000-0000-4000-8000-000000000002",
-        name: "KDMP Mejobo",
-        nib: "0310110934567",
-        volume: 180,
-        baselinePrice: 15_700,
+        cooperativeId: "35000000-0000-4000-8000-000000000003",
+        name: "KDMP Sanankulon",
+        nib: "3505110934567",
+        volume: 360,
+        baselinePrice: 15_200,
       },
       {
-        cooperativeId: "21000000-0000-4000-8000-000000000003",
-        name: "KDMP Undaan",
-        nib: "0310110976543",
-        volume: 200,
-        baselinePrice: 15_650,
+        cooperativeId: "35000000-0000-4000-8000-000000000004",
+        name: "KDMP Garum",
+        nib: "3505110976543",
+        volume: 320,
+        baselinePrice: 14_500, // median distribusi asli
       },
     ],
   },
   {
-    id: "pool-telur-semarang",
+    // CROSS-SUPPLY telur (ADDENDUM §4.6): pool pembeli di Kaltim dengan baseline ±Rp55.000/kg
+    // (arbitrase antar-wilayah asli). Sumber suplai [Koperasi Produsen] KDMP Ringinrejo (Blitar)
+    // dari devCommodityMarkets.telur → memvisualkan komoditas primer regional lewat cross-supply.
+    id: "pool-telur-kaltim",
     commodityId: "telur",
-    wilayah: "Semarang",
+    wilayah: "Kutai Kartanegara",
     windowOption: "two-weeks",
-    baseTotalVolume: 600,
-    baseParticipantCount: 4,
+    baseTotalVolume: 400,
+    baseParticipantCount: 3,
     baseMembers: [
       {
-        cooperativeId: "22000000-0000-4000-8000-000000000001",
-        name: "KDMP Gunungpati",
-        nib: "0330110912345",
-        volume: 160,
-        baselinePrice: 28_000,
-      },
-      {
-        cooperativeId: "22000000-0000-4000-8000-000000000002",
-        name: "KDMP Mijen",
-        nib: "0330110956789",
+        cooperativeId: "30000000-0000-4000-8000-000000000001",
+        name: "KDMP Loa Janan",
+        nib: "6402110912345",
         volume: 150,
-        baselinePrice: 27_800,
+        baselinePrice: 55_000, // baseline beli asli Kaltim (jauh di atas wilayah produsen)
       },
       {
-        cooperativeId: "22000000-0000-4000-8000-000000000003",
-        name: "KDMP Ngaliyan",
-        nib: "0330110934567",
+        cooperativeId: "64000000-0000-4000-8000-000000000002",
+        name: "KDMP Tenggarong",
+        nib: "6402110956789",
         volume: 140,
-        baselinePrice: 28_200,
+        baselinePrice: 53_500,
       },
       {
-        cooperativeId: "22000000-0000-4000-8000-000000000004",
-        name: "KDMP Tembalang",
-        nib: "0330110976543",
-        volume: 150,
-        baselinePrice: 28_100,
+        cooperativeId: "64000000-0000-4000-8000-000000000003",
+        name: "KDMP Sebulu",
+        nib: "6402110934567",
+        volume: 110,
+        baselinePrice: 54_200,
       },
     ],
   },
@@ -347,14 +346,16 @@ export const devPools: readonly DevPoolFixture[] = [
 export const devCooperatives: readonly DevCooperative[] = [
   {
     id: "10000000-0000-4000-8000-000000000001",
-    nama: "KDMP Karangmalang",
-    desa: "Karangmalang",
-    kabupaten: "Sragen",
-    provinsi: "Jawa Tengah",
-    kodeWilayah: "33.14.09.2001",
-    nib: "0220110987654",
+    // Koperasi demo (akun juri) — anggota klaster MinyaKita Jawa Timur (ADDENDUM §4.5),
+    // sekaligus kabupaten produsen ayam (Blitar) → memenuhi syarat cross-supply telur (§4.6).
+    nama: "KDMP Talun",
+    desa: "Talun",
+    kabupaten: "Blitar",
+    provinsi: "Jawa Timur",
+    kodeWilayah: "35.05.12.2001",
+    nib: "0350110987654",
     simkopdesVerified: true,
-    isProducer: false,
+    isProducer: true,
   },
   {
     id: "10000000-0000-4000-8000-000000000002",
@@ -399,6 +400,20 @@ export const devCooperatives: readonly DevCooperative[] = [
     nib: "0350110912345",
     simkopdesVerified: true,
     isProducer: true,
+  },
+  {
+    // Koperasi pembeli telur di Kaltim — baseline ±Rp55.000/kg (anchor asli, ADDENDUM §1/§4.6).
+    // Wilayah 64.02 (Kutai Kartanegara) BUKAN produsen ayam → penawaran suplai telur DITOLAK,
+    // sementara pemasok Blitar (35.05) memenuhi syarat: inti demo constraint cross-supply.
+    id: "30000000-0000-4000-8000-000000000001",
+    nama: "KDMP Loa Janan",
+    desa: "Loa Janan",
+    kabupaten: "Kutai Kartanegara",
+    provinsi: "Kalimantan Timur",
+    kodeWilayah: "64.02.05.2001",
+    nib: "6402110912345",
+    simkopdesVerified: true,
+    isProducer: false,
   },
 ] as const;
 
