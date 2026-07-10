@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 
+import { AppShell } from "@/components/app-shell";
 import { AdminHub } from "@/components/admin-hub";
 import { getAuthContext, getRoleDestination } from "@/lib/auth";
 import { getPoolDetails } from "@/lib/pools";
@@ -21,5 +22,9 @@ export default async function AdminHubPage() {
     getIssuedPoolIds(),
   ]);
 
-  return <AdminHub pools={pools} issuedPoolIds={issuedPoolIds} />;
+  return (
+    <AppShell auth={auth} active="hub">
+      <AdminHub pools={pools} issuedPoolIds={issuedPoolIds} />
+    </AppShell>
+  );
 }

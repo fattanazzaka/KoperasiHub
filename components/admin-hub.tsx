@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 import { logoutAction } from "@/app/actions/auth";
-import { AdminPoolControl } from "@/components/admin-pool-control";
+import { AdminPoolBoard } from "@/components/admin-pool-board";
 import { BrandMark } from "@/components/brand-mark";
 import type { PoolSummary } from "@/lib/pool-types";
 
@@ -79,38 +79,7 @@ export function AdminHub({ pools, issuedPoolIds }: AdminHubProps) {
           </div>
         </dl>
 
-        <section className="admin-pools" aria-labelledby="admin-pools-title">
-          <div className="admin-section-heading">
-            <div>
-              <p className="eyebrow">Antrean Operasional</p>
-              <h2 id="admin-pools-title">Pool Permintaan</h2>
-            </div>
-            <span>{pools.length} pool</span>
-          </div>
-
-          {pools.length ? (
-            <div className="admin-pool-list">
-              {pools.map((pool) => (
-                <AdminPoolControl
-                  key={pool.id}
-                  pool={pool}
-                  issued={issuedIds.has(pool.id)}
-                />
-              ))}
-            </div>
-          ) : (
-            <div className="admin-empty-state">
-              <span aria-hidden="true">
-                <svg viewBox="0 0 24 24">
-                  <path d="M4 7.5 12 3l8 4.5v9L12 21l-8-4.5z" />
-                  <path d="m4 7.5 8 4.5 8-4.5M12 12v9" />
-                </svg>
-              </span>
-              <h3>Belum ada Pool Permintaan</h3>
-              <p>Pool baru akan muncul saat koperasi mengajukan kebutuhan.</p>
-            </div>
-          )}
-        </section>
+        <AdminPoolBoard pools={pools} issuedPoolIds={issuedPoolIds} />
       </section>
     </main>
   );

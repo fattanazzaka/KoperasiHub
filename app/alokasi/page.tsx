@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
+import { AppShell } from "@/components/app-shell";
 import { AllocationList } from "@/components/allocation-list";
 import { getAuthContext, getRoleDestination } from "@/lib/auth";
 import { getCooperativeAllocations } from "@/lib/procurement";
@@ -21,7 +22,8 @@ export default async function AllocationPage() {
   const allocations = await getCooperativeAllocations(auth);
 
   return (
-    <main className="allocation-page">
+    <AppShell auth={auth} active="alokasi">
+      <main className="allocation-page">
       <header className="form-header">
         <Link href="/beranda" aria-label="Kembali ke Beranda">
           <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -38,6 +40,7 @@ export default async function AllocationPage() {
         </div>
         <AllocationList allocations={allocations} />
       </section>
-    </main>
+      </main>
+    </AppShell>
   );
 }

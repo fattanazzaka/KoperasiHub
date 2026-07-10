@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
+import { AppShell } from "@/components/app-shell";
 import { DemandForm } from "@/components/demand-form";
 import { getAuthContext, getRoleDestination } from "@/lib/auth";
 import { devCommodities } from "@/lib/dev-fixture";
@@ -38,7 +39,8 @@ export default async function SubmitDemandPage({
   const { commodity, qty, baseline } = await searchParams;
 
   return (
-    <main className="form-page">
+    <AppShell auth={auth} active="ajukan">
+      <main className="form-page">
       <header className="form-header">
         <Link href="/beranda" aria-label="Kembali ke Beranda">
           <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -59,6 +61,7 @@ export default async function SubmitDemandPage({
           initialPrice={parsePositiveInt(baseline)}
         />
       </section>
-    </main>
+      </main>
+    </AppShell>
   );
 }

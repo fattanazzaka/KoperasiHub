@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 
+import { AppShell } from "@/components/app-shell";
 import { PoolDetailView } from "@/components/pool-detail-view";
 import { getAuthContext, getRoleDestination } from "@/lib/auth";
 import { getPoolDetail } from "@/lib/pools";
@@ -33,7 +34,8 @@ export default async function PoolDetailPage({ params }: PoolDetailPageProps) {
   }
 
   return (
-    <main className="pool-page">
+    <AppShell auth={auth} active="pool">
+      <main className="pool-page">
       <header className="form-header">
         <Link href="/pool" aria-label="Kembali ke daftar Pool Permintaan">
           <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -46,6 +48,7 @@ export default async function PoolDetailPage({ params }: PoolDetailPageProps) {
       <section className="pool-detail-wrap">
         <PoolDetailView pool={pool} />
       </section>
-    </main>
+      </main>
+    </AppShell>
   );
 }

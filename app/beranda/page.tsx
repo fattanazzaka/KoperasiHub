@@ -1,7 +1,10 @@
 import { redirect } from "next/navigation";
 
+import { AppShell } from "@/components/app-shell";
 import { RoleHome } from "@/components/role-home";
 import { getAuthContext, getRoleDestination } from "@/lib/auth";
+import { getPoolDetails } from "@/lib/pools";
+import { getCooperativeAllocations } from "@/lib/procurement";
 
 export default async function CooperativeHomePage() {
   const auth = await getAuthContext();
@@ -14,5 +17,14 @@ export default async function CooperativeHomePage() {
     redirect(getRoleDestination(auth.role));
   }
 
-  return <RoleHome auth={auth} />;
+  const [pools, allocations] = await Promise.all([
+    getPoolDetails(auth),
+    getCooperativeAllocations(auth),
+  ]);
+
+  return (
+    <AppShell auth={auth} active="beranda">
+      <RoleHome auth={auth} pools={pools} allocations={allocations} />
+    </AppShell>
+  );
 }

@@ -3,7 +3,7 @@ import "server-only";
 import { isSupabaseConfigured } from "@/lib/config";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
-// Panel Net Settlement (Muqashshah) — US-08.
+// Panel Net Settlement — US-08.
 // Skenario dibekukan di docs/07 §7: KDMP Cilegon memasok telur ke pool Serang,
 // koperasi Serang (Unyur) memasok MinyaKita ke pool Cilegon. Neto: Cilegon
 // menerima Rp6.000.000. Angka WAJIB identik dengan seed & deck.

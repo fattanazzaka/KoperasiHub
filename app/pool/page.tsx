@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
+import { AppShell } from "@/components/app-shell";
 import { PoolCard } from "@/components/pool-card";
 import { getAuthContext, getRoleDestination } from "@/lib/auth";
 import { getPoolDetails } from "@/lib/pools";
@@ -23,7 +24,8 @@ export default async function PoolListPage() {
   const pools = await getPoolDetails(auth);
 
   return (
-    <main className="pool-page">
+    <AppShell auth={auth} active="pool">
+      <main className="pool-page">
       <header className="form-header">
         <Link href="/beranda" aria-label="Kembali ke Beranda">
           <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -56,6 +58,7 @@ export default async function PoolListPage() {
           </div>
         )}
       </section>
-    </main>
+      </main>
+    </AppShell>
   );
 }

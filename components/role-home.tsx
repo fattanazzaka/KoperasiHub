@@ -2,16 +2,31 @@ import Link from "next/link";
 
 import { logoutAction } from "@/app/actions/auth";
 import { BrandMark } from "@/components/brand-mark";
+import { PoolCard } from "@/components/pool-card";
 import { RecommendationCards } from "@/components/recommendation-cards";
 import type { AuthContext } from "@/lib/auth";
+import type { PoolSummary } from "@/lib/pool-types";
+import type { CooperativeAllocation } from "@/lib/procurement-types";
 
 type RoleHomeProps = {
   auth: AuthContext;
+  pools: PoolSummary[];
+  allocations: CooperativeAllocation[];
 };
 
-export function RoleHome({ auth }: RoleHomeProps) {
-  const isAdmin = auth.role === "admin";
-  const title = isAdmin ? "Admin Hub" : auth.cooperative?.nama;
+function formatRupiah(value: number): string {
+  return `Rp${value.toLocaleString("id-ID")}`;
+}
+
+export function RoleHome({ auth, pools, allocations }: RoleHomeProps) {
+  const totalSavings = allocations.reduce(
+    (total, item) => total + item.allocation.savings,
+    0,
+  );
+  const activePools = pools.filter((pool) => pool.status === "open");
+  const priorityPools = [...activePools]
+    .sort((a, b) => b.progress.progressPercent - a.progress.progressPercent)
+    .slice(0, 2);
 
   return (
     <main className="role-page">
@@ -30,10 +45,13 @@ export function RoleHome({ auth }: RoleHomeProps) {
       <section className="role-content">
         <div className="identity-row">
           <div>
-            <p className="eyebrow">{isAdmin ? "Akses pengelola" : "Beranda koperasi"}</p>
-            <h1>{title}</h1>
+            <p className="eyebrow">Beranda koperasi</p>
+            <h1>{auth.cooperative?.nama}</h1>
+            <p className="identity-row__location">
+              {auth.cooperative?.kabupaten}, {auth.cooperative?.provinsi}
+            </p>
           </div>
-          {!isAdmin && auth.cooperative?.simkopdesVerified ? (
+          {auth.cooperative?.simkopdesVerified ? (
             <span className="verified-badge">
               <svg viewBox="0 0 20 20" aria-hidden="true">
                 <path d="m6 10 2.4 2.4L14 7" />
@@ -43,45 +61,44 @@ export function RoleHome({ auth }: RoleHomeProps) {
           ) : null}
         </div>
 
-        <article className="access-card">
-          <span className="access-icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24">
-              <path d="m5 12 4 4L19 6" />
-            </svg>
-          </span>
+        <dl className="home-summary" aria-label="Ringkasan koperasi">
           <div>
-            <h2>Login berhasil</h2>
-            <p>
-              Anda masuk sebagai <strong>{isAdmin ? "Admin Hub" : "koperasi"}</strong>
-              {auth.email ? ` melalui ${auth.email}.` : "."}
-            </p>
-            <p className="access-note">
-              {isAdmin
-                ? "Akses pengelolaan pool telah terverifikasi."
-                : `Wilayah akun: ${auth.cooperative?.kabupaten}, ${auth.cooperative?.provinsi}.`}
-            </p>
+            <dt>Total hemat</dt>
+            <dd className="is-savings">{formatRupiah(totalSavings)}</dd>
+            <span>Dari PO yang sudah terbit</span>
           </div>
-        </article>
-
-        {!isAdmin ? <RecommendationCards /> : null}
-
-        {!isAdmin ? (
-          <div className="home-actions">
-            <Link className="primary-link" href="/ajukan">
-              <span aria-hidden="true">+</span>
-              Ajukan Kebutuhan
-            </Link>
-            <Link className="secondary-link" href="/pool">
-              Lihat Pool Aktif
-            </Link>
-            <Link className="secondary-link" href="/alokasi">
-              Alokasi Saya
-            </Link>
-            <Link className="secondary-link" href="/settlement">
-              Net Settlement
-            </Link>
+          <div>
+            <dt>Pool aktif</dt>
+            <dd>{activePools.length}</dd>
+            <span>Di jaringan pengadaan</span>
           </div>
-        ) : null}
+          <div>
+            <dt>PO diikuti</dt>
+            <dd>{allocations.length}</dd>
+            <span>Dengan Alokasi Proporsional</span>
+          </div>
+        </dl>
+
+        <div className="home-workspace">
+          <section className="home-workspace__main">
+            <RecommendationCards />
+          </section>
+
+          <section className="home-pools" aria-labelledby="home-pools-title">
+            <div className="section-heading-row">
+              <div>
+                <p className="eyebrow">Perlu perhatian</p>
+                <h2 id="home-pools-title">Pool terdekat ke target</h2>
+              </div>
+              <Link href="/pool">Lihat semua</Link>
+            </div>
+            <div className="home-pools__list">
+              {priorityPools.map((pool) => (
+                <PoolCard key={pool.id} pool={pool} />
+              ))}
+            </div>
+          </section>
+        </div>
       </section>
     </main>
   );

@@ -61,7 +61,6 @@ export function SettlementPanel({ settlement, backHref }: SettlementPanelProps) 
                 Hanya selisih neto yang berpindah tunai — satu pembayaran, bukan dua.
               </p>
             </div>
-            <span className="settlement-akad">Akad: Muqashshah</span>
           </div>
         </div>
 
