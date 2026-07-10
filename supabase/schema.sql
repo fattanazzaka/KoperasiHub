@@ -1,4 +1,22 @@
 -- Canonical KoperasiHub schema for Supabase/PostgreSQL.
+-- Versi konsolidasi: mencakup penguatan keterlacakan SIMKOPDES + keamanan tipe.
+-- Menggantikan schema.sql awal (tidak perlu file migrasi terpisah).
+
+-- ============================================================================
+-- OPSIONAL — RESET (hanya jika mengganti DB yang sudah berisi objek lama).
+-- Hapus tanda komentar HANYA bila kamu sadar data akan hilang & sudah
+-- koordinasi dengan tim. Di dev lokal, lebih bersih pakai `supabase db reset`.
+-- JANGAN pakai `drop schema public cascade` di Supabase (menghapus grant).
+-- ----------------------------------------------------------------------------
+-- drop table if exists
+--   public.settlements, public.allocations, public.demands, public.pools,
+--   public.price_tiers, public.suppliers, public.commodities,
+--   public.users, public.cooperatives cascade;
+-- drop function if exists public.current_cooperative_id() cascade;
+-- drop function if exists public.is_admin() cascade;
+-- drop function if exists public.get_pool_stats() cascade;
+-- drop function if exists public.get_allocation_stats() cascade;
+-- ============================================================================
 
 begin;
 
@@ -7,14 +25,17 @@ create extension if not exists pgcrypto with schema extensions;
 -- Stores the SIMKOPDES institutional snapshot consumed by the application.
 create table public.cooperatives (
   id uuid primary key default gen_random_uuid(),
+  koperasi_ref text unique,          -- Kunci sumber SIMKOPDES (profil_koperasi.koperasi_ref).
   nama text not null,
+  nik_koperasi text,                 -- Nomor Induk Koperasi asli (profil_koperasi.nik_koperasi).
+  kode_wilayah text,                 -- referensi_koperasi_wilayah.kode_wilayah (prefix 2=prov, 5=kab).
   desa text,
   kecamatan text,
   kabupaten text not null,
   provinsi text not null,
   jumlah_anggota integer check (jumlah_anggota is null or jumlah_anggota >= 0),
-  nib text,
-  npwp text,
+  nib text,                          -- TIDAK ada di SIMKOPDES; sintetis/opsional.
+  npwp text,                         -- TIDAK ada di SIMKOPDES; sintetis/opsional.
   berbadan_hukum boolean not null default true,
   punya_akun boolean not null default true,
   status_rat text check (
@@ -33,6 +54,19 @@ create table public.cooperatives (
   ),
   is_producer boolean not null default false
 );
+
+comment on column public.cooperatives.koperasi_ref is
+  'Kunci sumber SIMKOPDES (profil_koperasi.koperasi_ref). NULL diperbolehkan untuk koperasi sintetis.';
+comment on column public.cooperatives.kode_wilayah is
+  'Kode wilayah SIMKOPDES via referensi_koperasi_wilayah.kode_wilayah. Prefix 2=provinsi, 5=kab/kota.';
+comment on column public.cooperatives.nik_koperasi is
+  'Nomor Induk Koperasi asli (profil_koperasi.nik_koperasi).';
+comment on column public.cooperatives.status_rat is
+  'Pemetaan dari rat_koperasi.status_rat: Verified->diverifikasi, Reported->dilaporkan, '
+  'Drafted->melaksanakan, (tanpa RAT)->belum. Rejected tidak dipetakan.';
+comment on column public.cooperatives.is_producer is
+  'Turunan dari data transaksi/inventaris (barang_masuk_produk/inventaris_produk), '
+  'BUKAN dari referensi_komoditas_desa (hindari framing potensi desa / Tema 2).';
 
 -- Maps application profiles one-to-one with Supabase Auth users.
 create table public.users (
@@ -78,6 +112,7 @@ create table public.pools (
   id uuid primary key default gen_random_uuid(),
   commodity_id text not null references public.commodities (id) on delete restrict,
   wilayah text not null,
+  wilayah_kode text,                 -- Kode wilayah SIMKOPDES untuk pengelompokan regional stabil.
   window_start date not null,
   window_end date not null,
   status text not null default 'open' check (
@@ -94,6 +129,10 @@ create table public.pools (
   unique (commodity_id, wilayah, window_start, window_end)
 );
 
+comment on column public.pools.wilayah_kode is
+  'Kode wilayah SIMKOPDES untuk pengelompokan regional yang stabil (mis. prefix kabupaten). '
+  'Cross-region supply = peserta supply dengan wilayah_kode berbeda.';
+
 create table public.demands (
   id uuid primary key default gen_random_uuid(),
   pool_id uuid not null references public.pools (id) on delete cascade,
@@ -109,16 +148,22 @@ create table public.demands (
   )
 );
 
+comment on column public.demands.harga_baseline is
+  'Harga beli pra-pooling koperasi; dijangkarkan ke barang_masuk_produk.harga_beli (per unit). '
+  'Fee sukses dihitung dari selisih baseline dengan harga tier.';
+
 -- Stores issued PO allocations. Pool totals are derived from demand rows to avoid
 -- duplicating aggregate state in the pools table.
+-- Catatan: hemat_rp & fee_rp memakai bigint karena agregat rupiah bisa menembus
+-- batas integer (~2,14 miliar) pada pool besar.
 create table public.allocations (
   id uuid primary key default gen_random_uuid(),
   pool_id uuid not null references public.pools (id) on delete cascade,
   cooperative_id uuid not null references public.cooperatives (id) on delete cascade,
   volume integer not null check (volume > 0),
   harga_tier integer not null check (harga_tier > 0),
-  hemat_rp integer not null check (hemat_rp >= 0),
-  fee_rp integer not null default 0 check (fee_rp >= 0 and fee_rp <= hemat_rp),
+  hemat_rp bigint not null check (hemat_rp >= 0),
+  fee_rp bigint not null default 0 check (fee_rp >= 0 and fee_rp <= hemat_rp),
   unique (pool_id, cooperative_id)
 );
 
@@ -133,6 +178,8 @@ create table public.settlements (
   unique (coop_a, coop_b)
 );
 
+create index cooperatives_koperasi_ref_idx on public.cooperatives (koperasi_ref);
+create index cooperatives_kode_wilayah_idx on public.cooperatives (kode_wilayah);
 create index users_cooperative_id_idx on public.users (cooperative_id);
 create index suppliers_cooperative_id_idx on public.suppliers (cooperative_id);
 create index price_tiers_lookup_idx on public.price_tiers (
