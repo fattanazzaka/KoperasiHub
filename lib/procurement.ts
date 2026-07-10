@@ -8,6 +8,7 @@ import {
   saveDemoPurchaseOrder,
 } from "@/lib/demo-purchase-orders";
 import { devCooperatives, devPools } from "@/lib/dev-fixture";
+import { calculateSuccessFee } from "@/lib/fees";
 import { getPoolDetail } from "@/lib/pools";
 import type {
   CooperativeAllocation,
@@ -88,6 +89,11 @@ function buildAllocations(
 ): PurchaseOrderAllocation[] {
   return members.map((member) => {
     const baselinePrice = Math.round(member.baselineTotal / member.volume);
+    const savings = Math.max(
+      0,
+      member.baselineTotal - tierPrice * member.volume,
+    );
+
     return {
       cooperativeId: member.cooperativeId,
       cooperativeName: member.cooperativeName,
@@ -95,10 +101,20 @@ function buildAllocations(
       volume: member.volume,
       baselinePrice,
       tierPrice,
-      savings: Math.max(0, member.baselineTotal - tierPrice * member.volume),
-      fee: 0,
+      savings,
+      fee: calculateSuccessFee(savings),
     };
   });
+}
+
+function withSuccessFees(purchaseOrder: PurchaseOrder): PurchaseOrder {
+  return {
+    ...purchaseOrder,
+    allocations: purchaseOrder.allocations.map((allocation) => ({
+      ...allocation,
+      fee: calculateSuccessFee(allocation.savings),
+    })),
+  };
 }
 
 async function issueDemoPurchaseOrder(
@@ -271,7 +287,7 @@ async function issueSupabasePurchaseOrder(
       volume: allocation.volume,
       harga_tier: allocation.tierPrice,
       hemat_rp: allocation.savings,
-      fee_rp: 0,
+      fee_rp: allocation.fee,
     })),
     { onConflict: "pool_id,cooperative_id" },
   );
@@ -337,7 +353,7 @@ async function getSupabasePurchaseOrder(poolId: string): Promise<PurchaseOrder |
         baselinePrice: row.harga_tier + Math.round(row.hemat_rp / row.volume),
         tierPrice: row.harga_tier,
         savings: row.hemat_rp,
-        fee: row.fee_rp,
+        fee: calculateSuccessFee(row.hemat_rp),
       };
     },
   );
@@ -375,9 +391,14 @@ export async function getPurchaseOrder(
     return null;
   }
 
-  return isSupabaseConfigured()
-    ? getSupabasePurchaseOrder(poolId)
-    : ((await getDemoPurchaseOrders()).find((item) => item.poolId === poolId) ?? null);
+  if (isSupabaseConfigured()) {
+    return getSupabasePurchaseOrder(poolId);
+  }
+
+  const purchaseOrder = (await getDemoPurchaseOrders()).find(
+    (item) => item.poolId === poolId,
+  );
+  return purchaseOrder ? withSuccessFees(purchaseOrder) : null;
 }
 
 export async function getIssuedPoolIds(): Promise<string[]> {
@@ -399,7 +420,15 @@ export async function getCooperativeAllocations(
         (item) => item.cooperativeId === auth.cooperative!.id,
       );
       return allocation
-        ? [{ purchaseOrder: toOrderSummary(purchaseOrder), allocation }]
+        ? [
+            {
+              purchaseOrder: toOrderSummary(purchaseOrder),
+              allocation: {
+                ...allocation,
+                fee: calculateSuccessFee(allocation.savings),
+              },
+            },
+          ]
         : [];
     });
   }
@@ -432,7 +461,7 @@ export async function getCooperativeAllocations(
       baselinePrice: row.harga_tier + Math.round(row.hemat_rp / row.volume),
       tierPrice: row.harga_tier,
       savings: row.hemat_rp,
-      fee: row.fee_rp,
+      fee: calculateSuccessFee(row.hemat_rp),
     };
     const totalVolume = Number(aggregate?.total_volume ?? row.volume);
 

@@ -1851,6 +1851,11 @@ a:focus-visible {
   font-weight: 600;
 }
 
+.po-table-wrap .money-fee {
+  color: var(--tinta);
+  font-weight: 600;
+}
+
 .po-total-row {
   font-weight: 700;
 }
@@ -1946,6 +1951,42 @@ a:focus-visible {
 
 .allocation-metrics .allocation-savings dd {
   color: var(--hijau-hemat);
+}
+
+.allocation-fee {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 12px;
+  padding: 11px 13px;
+  border: 1px solid rgb(92 101 112 / 14%);
+  border-radius: 8px;
+  color: var(--abu);
+  background: rgb(92 101 112 / 5%);
+  font-size: 12px;
+}
+
+.allocation-fee > div {
+  display: grid;
+  gap: 2px;
+}
+
+.allocation-fee span {
+  color: var(--tinta);
+  font-weight: 600;
+}
+
+.allocation-fee small {
+  color: var(--abu);
+  font-size: 11px;
+}
+
+.allocation-fee strong {
+  color: var(--tinta);
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
 }
 
 .cluster-summary {

@@ -167,6 +167,9 @@ create table public.allocations (
   unique (pool_id, cooperative_id)
 );
 
+comment on column public.allocations.fee_rp is
+  'Fee Keberhasilan: 5% dari hemat_rp, dibulatkan ke rupiah terdekat; nol bila tidak ada penghematan.';
+
 -- Stores bilateral invoices; the net settlement amount is derived at read time.
 create table public.settlements (
   id uuid primary key default gen_random_uuid(),

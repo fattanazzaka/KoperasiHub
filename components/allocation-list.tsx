@@ -1,3 +1,4 @@
+import { SUCCESS_FEE_PERCENTAGE } from "@/lib/fees";
 import type { CooperativeAllocation } from "@/lib/procurement-types";
 
 type AllocationListProps = {
@@ -53,6 +54,14 @@ export function AllocationList({ allocations }: AllocationListProps) {
               <dd>{formatRupiah(allocation.savings)}</dd>
             </div>
           </dl>
+
+          <div className="allocation-fee">
+            <div>
+              <span>Fee Keberhasilan</span>
+              <small>{SUCCESS_FEE_PERCENTAGE}% dari penghematan</small>
+            </div>
+            <strong>{formatRupiah(allocation.fee)}</strong>
+          </div>
 
           <div className="cluster-summary">
             <span>Ringkasan klaster</span>

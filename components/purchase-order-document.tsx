@@ -1,4 +1,5 @@
 import { BrandMark } from "@/components/brand-mark";
+import { SUCCESS_FEE_PERCENTAGE } from "@/lib/fees";
 import type { PurchaseOrder } from "@/lib/procurement-types";
 
 type PurchaseOrderDocumentProps = {
@@ -28,6 +29,10 @@ export function PurchaseOrderDocument({
     year: "numeric",
     timeZone: "Asia/Jakarta",
   }).format(new Date(purchaseOrder.issuedAt));
+  const totalSuccessFee = purchaseOrder.allocations.reduce(
+    (total, allocation) => total + allocation.fee,
+    0,
+  );
 
   return (
     <article className="po-document">
@@ -82,6 +87,7 @@ export function PurchaseOrderDocument({
               <th>Alokasi</th>
               <th>Harga tier</th>
               <th>Hemat</th>
+              <th>Fee Keberhasilan ({SUCCESS_FEE_PERCENTAGE}%)</th>
             </tr>
           </thead>
           <tbody>
@@ -94,6 +100,7 @@ export function PurchaseOrderDocument({
                 </td>
                 <td>{formatRupiah(allocation.tierPrice)}</td>
                 <td className="money-saved">{formatRupiah(allocation.savings)}</td>
+                <td className="money-fee">{formatRupiah(allocation.fee)}</td>
               </tr>
             ))}
             <tr className="po-total-row">
@@ -105,14 +112,17 @@ export function PurchaseOrderDocument({
               <td className="money-saved">
                 {formatRupiah(purchaseOrder.totalSavings)}
               </td>
+              <td className="money-fee">{formatRupiah(totalSuccessFee)}</td>
             </tr>
           </tbody>
         </table>
       </div>
 
       <p className="po-note">
-        Alokasi Proporsional mengikuti volume kebutuhan setiap koperasi. Dokumen ini
-        tidak memproses pembayaran atau logistik.
+        Alokasi Proporsional mengikuti volume kebutuhan setiap koperasi. Fee
+        Keberhasilan sebesar {SUCCESS_FEE_PERCENTAGE}% dari penghematan hanya dikenakan
+        saat Ambang Tier tercapai dan PO Konsolidasi diterbitkan. Dokumen ini tidak
+        memproses pembayaran atau logistik.
       </p>
 
       <section className="po-signatures">
