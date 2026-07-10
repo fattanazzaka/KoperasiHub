@@ -1,3 +1,13 @@
 CLAUDE.md
 .claude/
 node_modules/
+.next/
+out/
+
+# Local environment files may contain credentials.
+.env*
+!.env.example
+
+# Local tooling output.
+*.tsbuildinfo
+next-env.d.ts
