@@ -6,6 +6,10 @@ import { redirect } from "next/navigation";
 import { getAuthContext } from "@/lib/auth";
 import { isSupabaseConfigured } from "@/lib/config";
 import {
+  describeEligibility,
+  evaluateSupplierEligibility,
+} from "@/lib/cross-supply";
+import {
   type DemandFieldErrors,
   validateDemandForm,
 } from "@/lib/demand";
@@ -125,6 +129,24 @@ export async function submitDemandAction(
   }
 
   const submission = validation.data;
+
+  // Gerbang cross-supply (ADDENDUM §3): hanya penawaran suplai yang dibatasi;
+  // koperasi pembeli (demand) tidak pernah dibatasi kanal.
+  if (submission.role === "supply") {
+    const eligibility = evaluateSupplierEligibility(
+      { kodeWilayah: auth.cooperative.kodeWilayah },
+      submission.commodity.id,
+    );
+
+    if (!eligibility.eligible) {
+      return {
+        fieldErrors: {},
+        formError: describeEligibility(eligibility),
+        success: null,
+      };
+    }
+  }
+
   const poolName = createPoolName(
     submission.commodity.nama,
     auth.cooperative.kabupaten,

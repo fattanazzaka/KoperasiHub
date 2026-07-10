@@ -190,6 +190,27 @@ a:focus-visible {
   line-height: 1.45;
 }
 
+.supply-eligibility {
+  margin: -4px 0 0;
+  padding: 10px 12px;
+  border-left: 3px solid;
+  border-radius: 4px;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.supply-eligibility.is-eligible {
+  border-left-color: var(--hijau-hemat);
+  color: var(--hijau-hemat);
+  background: rgb(14 123 70 / 7%);
+}
+
+.supply-eligibility.is-blocked {
+  border-left-color: var(--merah);
+  color: var(--merah-tua);
+  background: rgb(200 30 30 / 7%);
+}
+
 .demo-account {
   padding: 12px 16px;
   border: 1px solid rgb(92 101 112 / 15%);

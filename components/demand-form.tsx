@@ -8,6 +8,10 @@ import {
   type DemandActionState,
 } from "@/app/actions/demand";
 import {
+  describeEligibility,
+  evaluateSupplierEligibility,
+} from "@/lib/cross-supply";
+import {
   windowOptions,
   type DemandRole,
 } from "@/lib/demand";
@@ -17,6 +21,7 @@ type DemandFormProps = {
   commodities: readonly DevCommodity[];
   cooperativeName: string;
   wilayah: string;
+  kodeWilayah: string | null;
   initialCommodityId?: string;
 };
 
@@ -60,6 +65,7 @@ export function DemandForm({
   commodities,
   cooperativeName,
   wilayah,
+  kodeWilayah,
   initialCommodityId,
 }: DemandFormProps) {
   const defaultCommodityId =
@@ -83,6 +89,13 @@ export function DemandForm({
   );
   const isDemand = role === "demand";
   const defaults = commodityDefaults[commodityId] ?? fallbackDefaults;
+  // Hint kualifikasi pemasok (ADDENDUM §3) — hanya relevan saat menawarkan suplai.
+  // Gerbang sebenarnya tetap di server action; ini hanya feedback UX.
+  const supplyEligibility = useMemo(
+    () => evaluateSupplierEligibility({ kodeWilayah }, commodityId),
+    [kodeWilayah, commodityId],
+  );
+  const blockSupply = !isDemand && !supplyEligibility.eligible;
 
   return (
     <>
@@ -135,6 +148,17 @@ export function DemandForm({
             </small>
           ) : null}
         </label>
+
+        {!isDemand ? (
+          <p
+            className={`supply-eligibility${blockSupply ? " is-blocked" : " is-eligible"}`}
+            role={blockSupply ? "alert" : undefined}
+          >
+            {blockSupply
+              ? describeEligibility(supplyEligibility)
+              : "Wilayah Anda terkualifikasi memasok komoditas ini."}
+          </p>
+        ) : null}
 
         <div className="volume-row">
           <label className="field-group">
@@ -232,12 +256,18 @@ export function DemandForm({
           </p>
         ) : null}
 
-        <button className="submit-demand" type="submit" disabled={isPending}>
+        <button
+          className="submit-demand"
+          type="submit"
+          disabled={isPending || blockSupply}
+        >
           {isPending
             ? "Mengirim ke Pool…"
-            : isDemand
-              ? "Kirim ke Pool"
-              : "Kirim penawaran ke Pool"}
+            : blockSupply
+              ? "Belum memenuhi syarat pemasok"
+              : isDemand
+                ? "Kirim ke Pool"
+                : "Kirim penawaran ke Pool"}
         </button>
       </form>
 

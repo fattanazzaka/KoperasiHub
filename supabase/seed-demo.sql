@@ -28,7 +28,9 @@ insert into public.commodities (id, nama, satuan) values
   ('minyak_kita', 'MinyaKita', 'liter'),
   ('telur', 'Telur Ayam', 'kg'),
   ('beras', 'Beras', 'kg'),
-  ('gula', 'Gula Pasir', 'kg')
+  ('beras_lokal', 'Beras Lokal Produsen', 'kg'),  -- kanal cross-supply (turunan padi)
+  ('gula', 'Gula Pasir', 'kg'),
+  ('lpg_3kg', 'LPG 3kg', 'kg')                     -- diblokir dari cross-supply (wajib pooling)
 on conflict (id) do nothing;
 
 -- --- Koperasi demo-inti (6 + 3 latar Pool B) --------------------------------------

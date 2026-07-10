@@ -4,13 +4,14 @@ export type DevCooperative = {
   desa: string;
   kabupaten: string;
   provinsi: string;
+  kodeWilayah: string; // Kode wilayah SIMKOPDES; kabupaten = 5 karakter pertama.
   nib: string;
   simkopdesVerified: boolean;
   isProducer: boolean;
 };
 
 export type DevCommodity = {
-  id: "beras" | "minyak_kita" | "gula" | "telur";
+  id: "beras" | "minyak_kita" | "gula" | "telur" | "lpg_3kg" | "beras_lokal";
   nama: string;
   satuan: "kg" | "liter";
 };
@@ -58,9 +59,11 @@ export type DevPoolMember = {
 
 export const devCommodities: readonly DevCommodity[] = [
   { id: "beras", nama: "Beras Medium", satuan: "kg" },
+  { id: "beras_lokal", nama: "Beras Lokal Produsen", satuan: "kg" },
   { id: "minyak_kita", nama: "MinyaKita", satuan: "liter" },
   { id: "gula", nama: "Gula Pasir", satuan: "kg" },
   { id: "telur", nama: "Telur Ayam", satuan: "kg" },
+  { id: "lpg_3kg", nama: "LPG 3kg", satuan: "kg" },
 ] as const;
 
 export const devCommodityMarkets: Record<
@@ -134,6 +137,36 @@ export const devCommodityMarkets: Record<
     ],
   },
   gula: {
+    baselinePrice: 0,
+    tiers: [],
+    sources: [],
+  },
+  // Beras produsen lokal (non-SPHP) — komoditas kanal CROSS-SUPPLY yang valid.
+  // Turunan dari padi; koperasi di kabupaten produsen padi boleh memasoknya.
+  beras_lokal: {
+    baselinePrice: 13_800,
+    tiers: [
+      {
+        id: "tier-beraslokal-antarkoperasi",
+        name: "Antar Koperasi",
+        minVolume: 1_000,
+        pricePerUnit: 12_900,
+      },
+    ],
+    sources: [
+      {
+        id: "supplier-kdmp-produsen-padi",
+        name: "KDMP Produsen Padi Sragen",
+        type: "koperasi",
+        location: "Sragen",
+        pricePerUnit: 12_900,
+      },
+    ],
+  },
+  // LPG 3kg — barang program/HET. Ada di katalog HANYA untuk mendemokan blokir
+  // kanal cross-supply (wajib lewat pooling). Market sengaja kosong: bukan panggung
+  // Tangga Tier, jadi tidak memuat angka harga yang bisa menyesatkan.
+  lpg_3kg: {
     baselinePrice: 0,
     tiers: [],
     sources: [],
@@ -318,6 +351,7 @@ export const devCooperatives: readonly DevCooperative[] = [
     desa: "Karangmalang",
     kabupaten: "Sragen",
     provinsi: "Jawa Tengah",
+    kodeWilayah: "33.14.09.2001",
     nib: "0220110987654",
     simkopdesVerified: true,
     isProducer: false,
@@ -328,6 +362,7 @@ export const devCooperatives: readonly DevCooperative[] = [
     desa: "Gemolong",
     kabupaten: "Sragen",
     provinsi: "Jawa Tengah",
+    kodeWilayah: "33.14.10.2002",
     nib: "0220110912345",
     simkopdesVerified: true,
     isProducer: false,
@@ -338,6 +373,7 @@ export const devCooperatives: readonly DevCooperative[] = [
     desa: "Masaran",
     kabupaten: "Sragen",
     provinsi: "Jawa Tengah",
+    kodeWilayah: "33.14.11.2003",
     nib: "0220110956789",
     simkopdesVerified: true,
     isProducer: false,
@@ -348,6 +384,7 @@ export const devCooperatives: readonly DevCooperative[] = [
     desa: "Kaliwungu",
     kabupaten: "Kudus",
     provinsi: "Jawa Tengah",
+    kodeWilayah: "33.19.01.2001",
     nib: "0310110912345",
     simkopdesVerified: true,
     isProducer: false,
@@ -358,6 +395,7 @@ export const devCooperatives: readonly DevCooperative[] = [
     desa: "Ringinrejo",
     kabupaten: "Blitar",
     provinsi: "Jawa Timur",
+    kodeWilayah: "35.05.20.2005",
     nib: "0350110912345",
     simkopdesVerified: true,
     isProducer: true,

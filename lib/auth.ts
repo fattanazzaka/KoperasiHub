@@ -21,6 +21,7 @@ export type AuthContext = {
     nama: string;
     kabupaten: string;
     provinsi: string;
+    kodeWilayah: string | null;
     simkopdesVerified: boolean;
   } | null;
   source: "supabase" | "demo";
@@ -55,7 +56,7 @@ async function getSupabaseAuthContext(): Promise<AuthContext | null> {
   if (profile.cooperative_id) {
     const { data } = await supabase
       .from("cooperatives")
-      .select("id, nama, kabupaten, provinsi, simkopdes_verified")
+      .select("id, nama, kabupaten, provinsi, kode_wilayah, simkopdes_verified")
       .eq("id", profile.cooperative_id)
       .single();
 
@@ -65,6 +66,7 @@ async function getSupabaseAuthContext(): Promise<AuthContext | null> {
         nama: data.nama,
         kabupaten: data.kabupaten,
         provinsi: data.provinsi,
+        kodeWilayah: data.kode_wilayah ?? null,
         simkopdesVerified: data.simkopdes_verified,
       };
     }
@@ -94,6 +96,7 @@ async function getDemoAuthContext(): Promise<AuthContext | null> {
         nama: juryCooperative.nama,
         kabupaten: juryCooperative.kabupaten,
         provinsi: juryCooperative.provinsi,
+        kodeWilayah: juryCooperative.kodeWilayah,
         simkopdesVerified: juryCooperative.simkopdesVerified,
       },
       source: "demo",

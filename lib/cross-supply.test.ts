@@ -7,7 +7,7 @@ import {
   evaluateSupplierEligibility,
   isEligibleSupplier,
   kabupatenCode,
-} from "./cross-supply.ts";
+} from "./cross-supply";
 
 // Kasus 1 — VALID langsung: Blitar (35.05) whitelist "telur", menawarkan telur.
 test("penawaran valid: komoditas ada di whitelist wilayah (direct)", () => {
@@ -42,6 +42,15 @@ test("penawaran ditolak: wilayah tidak terkualifikasi memproduksi komoditas", ()
   const result = evaluateSupplierEligibility(koperasi, "telur");
   assert.equal(result.eligible, false);
   assert.equal(result.reason, "not_produced_in_region");
+});
+
+// Katalog Opsi B — kunci perilaku dua komoditas baru.
+test("katalog Opsi B: beras_lokal (turunan padi) eligible, lpg_3kg selalu diblokir", () => {
+  const produsenPadi = { kodeWilayah: "33.14.09.2001" }; // Sragen
+  assert.equal(isEligibleSupplier(produsenPadi, "beras_lokal"), true);
+  // LPG 3kg diblokir dari kanal cross-supply di wilayah mana pun.
+  assert.equal(isEligibleSupplier(produsenPadi, "lpg_3kg"), false);
+  assert.equal(isEligibleSupplier({ kodeWilayah: "35.05.20.2005" }, "lpg_3kg"), false);
 });
 
 // Kasus 5 — helper kabupatenCode: ambil 5 karakter pertama, tangani input kosong.
