@@ -1189,14 +1189,18 @@ a:focus-visible {
   background: var(--merah-tua);
 }
 
-.admin-content,
+.admin-content {
+  width: min(100% - 40px, 1080px);
+  margin: 0 auto;
+  padding: 44px 0 64px;
+}
+
 .allocation-content {
   width: min(100% - 32px, 900px);
   margin: 0 auto;
   padding: 36px 0 56px;
 }
 
-.admin-content .identity-row h1,
 .allocation-intro h2 {
   margin: 0;
   font-family: "Plus Jakarta Sans Variable", "Plus Jakarta Sans", sans-serif;
@@ -1204,7 +1208,6 @@ a:focus-visible {
   font-weight: 800;
 }
 
-.admin-ready-count,
 .allocation-status {
   padding: 6px 9px;
   border-radius: 999px;
@@ -1214,15 +1217,159 @@ a:focus-visible {
   font-weight: 700;
 }
 
-.admin-pool-list,
 .allocation-list {
   display: grid;
   gap: 14px;
   margin-top: 24px;
 }
 
+.admin-header__actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.admin-role-badge {
+  padding: 6px 10px;
+  border: 1px solid rgb(200 30 30 / 18%);
+  border-radius: 999px;
+  color: var(--merah);
+  background: rgb(200 30 30 / 6%);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.admin-intro > .eyebrow {
+  margin-bottom: 10px;
+}
+
+.admin-intro__heading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 32px;
+}
+
+.admin-intro h1 {
+  margin: 0;
+  font-family: "Plus Jakarta Sans Variable", "Plus Jakarta Sans", sans-serif;
+  font-size: clamp(28px, 4vw, 38px);
+  font-weight: 800;
+  letter-spacing: -0.025em;
+}
+
+.admin-intro__heading p {
+  max-width: 630px;
+  margin: 10px 0 0;
+  color: var(--abu);
+  line-height: 1.6;
+}
+
+.admin-ready-count {
+  display: inline-flex;
+  min-height: 34px;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 11px;
+  border: 1px solid rgb(14 123 70 / 18%);
+  border-radius: 999px;
+  color: var(--hijau-hemat);
+  background: rgb(14 123 70 / 7%);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.admin-ready-count > span {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: currentcolor;
+  box-shadow: 0 0 0 4px rgb(14 123 70 / 10%);
+}
+
+.admin-overview {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin: 32px 0 0;
+  overflow: hidden;
+  border: 1px solid rgb(92 101 112 / 16%);
+  border-radius: 12px;
+  background: var(--kartu);
+  box-shadow: 0 8px 24px rgb(27 31 36 / 4%);
+}
+
+.admin-overview > div {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 4px 16px;
+  padding: 20px 22px;
+}
+
+.admin-overview > div + div {
+  border-left: 1px solid rgb(92 101 112 / 14%);
+}
+
+.admin-overview dt {
+  align-self: end;
+  color: var(--abu);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.admin-overview dd {
+  grid-row: span 2;
+  margin: 0;
+  font-family: "Plus Jakarta Sans Variable", "Plus Jakarta Sans", sans-serif;
+  font-size: 32px;
+  font-weight: 800;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.admin-overview > div > span {
+  color: var(--abu);
+  font-size: 12px;
+}
+
+.admin-overview__ready dd {
+  color: var(--hijau-hemat);
+}
+
+.admin-pools {
+  margin-top: 42px;
+}
+
+.admin-section-heading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.admin-section-heading .eyebrow {
+  margin-bottom: 5px;
+}
+
+.admin-section-heading h2 {
+  margin: 0;
+  font-family: "Plus Jakarta Sans Variable", "Plus Jakarta Sans", sans-serif;
+  font-size: 24px;
+  font-weight: 800;
+}
+
+.admin-section-heading > span {
+  color: var(--abu);
+  font-size: 13px;
+  font-weight: 600;
+}
+
 .admin-pool-list {
+  display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  margin-top: 18px;
 }
 
 .admin-pool-card,
@@ -1234,55 +1381,210 @@ a:focus-visible {
   background: var(--kartu);
 }
 
-.admin-pool-card__info,
-.admin-pool-card__tier {
+.admin-pool-card {
+  position: relative;
   display: flex;
-  align-items: flex-start;
+  min-width: 0;
+  flex-direction: column;
+  padding: 22px;
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgb(27 31 36 / 4%);
+}
+
+.admin-pool-card::before {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  height: 3px;
+  background: rgb(92 101 112 / 18%);
+  content: "";
+}
+
+.admin-pool-card--ready {
+  border-color: rgb(14 123 70 / 26%);
+}
+
+.admin-pool-card--ready::before {
+  background: var(--hijau-hemat);
+}
+
+.admin-pool-card--issued::before {
+  background: var(--merah);
+}
+
+.admin-pool-card__topline,
+.admin-pool-card__info,
+.admin-pool-card__tier,
+.admin-pool-progress__copy,
+.admin-pool-progress__meta {
+  display: flex;
   justify-content: space-between;
   gap: 12px;
+}
+
+.admin-pool-card__topline {
+  align-items: center;
+}
+
+.admin-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--abu);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.025em;
+  text-transform: uppercase;
+}
+
+.admin-status > span {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: currentcolor;
+}
+
+.admin-status--ready {
+  color: var(--hijau-hemat);
+}
+
+.admin-status--issued {
+  color: var(--merah);
+}
+
+.admin-status--locked {
+  color: #9a5b00;
+}
+
+.admin-pool-card__deadline {
+  color: var(--abu);
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.admin-pool-card__info {
+  align-items: flex-start;
+  margin-top: 18px;
 }
 
 .admin-pool-card h2 {
   margin: 0;
   font-family: "Plus Jakarta Sans Variable", "Plus Jakarta Sans", sans-serif;
-  font-size: 18px;
+  font-size: 20px;
+  line-height: 1.25;
 }
 
 .admin-pool-card__info p {
-  margin: 3px 0 0;
+  margin: 5px 0 0;
   color: var(--abu);
   font-size: 13px;
 }
 
-.admin-pool-card__info > strong {
-  font-variant-numeric: tabular-nums;
+.admin-pool-card__participants {
+  flex: 0 0 auto;
+  padding: 5px 8px;
+  border-radius: 999px;
+  color: var(--abu);
+  background: rgb(92 101 112 / 8%);
+  font-size: 11px;
+  font-weight: 600;
   white-space: nowrap;
 }
 
-.admin-pool-card__tier {
-  margin-top: 16px;
-  padding: 12px;
-  border-radius: 8px;
+.admin-pool-progress {
+  margin-top: 22px;
+}
+
+.admin-pool-progress__copy {
+  align-items: baseline;
+  font-size: 12px;
+}
+
+.admin-pool-progress__copy > span {
   color: var(--abu);
-  background: rgb(92 101 112 / 7%);
+  font-weight: 600;
+}
+
+.admin-pool-progress__copy strong {
   font-size: 13px;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.admin-pool-progress__track {
+  height: 8px;
+  margin-top: 10px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: rgb(92 101 112 / 12%);
+}
+
+.admin-pool-progress__track > span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--merah);
+}
+
+.admin-pool-card--ready .admin-pool-progress__track > span {
+  background: var(--hijau-hemat);
+}
+
+.admin-pool-progress__meta {
+  margin-top: 7px;
+  color: var(--abu);
+  font-size: 11px;
+}
+
+.admin-pool-progress__meta > span:first-child {
+  color: var(--tinta);
+  font-weight: 700;
+}
+
+.admin-pool-card__tier {
+  align-items: flex-end;
+  margin-top: 20px;
+  padding: 13px 14px;
+  border-radius: 8px;
+  background: rgb(92 101 112 / 7%);
+}
+
+.admin-pool-card__tier > div {
+  display: grid;
+  gap: 4px;
+}
+
+.admin-pool-card__tier span {
+  color: var(--abu);
+  font-size: 11px;
 }
 
 .admin-pool-card__tier strong {
   color: var(--tinta);
+  font-size: 13px;
   font-variant-numeric: tabular-nums;
+}
+
+.admin-pool-card__price {
+  text-align: right;
 }
 
 .admin-pool-card form,
 .admin-po-link {
   display: block;
-  margin-top: 14px;
+  margin-top: auto;
+  padding-top: 18px;
 }
 
 .admin-pool-card form button,
 .admin-po-link {
+  display: flex;
   width: 100%;
-  min-height: 46px;
+  min-height: 48px;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
   border: 0;
   border-radius: 8px;
   color: #fff;
@@ -1292,11 +1594,23 @@ a:focus-visible {
   cursor: pointer;
 }
 
+.admin-pool-card form button svg,
+.admin-po-link svg {
+  width: 18px;
+  fill: none;
+  stroke: currentcolor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2;
+}
+
 .admin-po-link {
-  display: flex;
-  align-items: center;
-  justify-content: center;
   text-decoration: none;
+}
+
+.admin-pool-card form button:not(:disabled):hover,
+.admin-po-link:hover {
+  background: var(--merah-tua);
 }
 
 .admin-pool-card form button:disabled {
@@ -1305,8 +1619,62 @@ a:focus-visible {
   cursor: not-allowed;
 }
 
+.admin-action-note {
+  margin: 8px 0 0;
+  color: var(--abu);
+  font-size: 11px;
+  line-height: 1.45;
+  text-align: center;
+}
+
 .admin-pool-card > .field-error {
   margin-top: 10px;
+}
+
+.admin-empty-state {
+  display: flex;
+  min-height: 260px;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  margin-top: 18px;
+  padding: 32px;
+  border: 1px dashed rgb(92 101 112 / 28%);
+  border-radius: 12px;
+  background: rgb(255 255 255 / 55%);
+  text-align: center;
+}
+
+.admin-empty-state > span {
+  display: flex;
+  width: 48px;
+  height: 48px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  color: var(--merah);
+  background: rgb(200 30 30 / 8%);
+}
+
+.admin-empty-state svg {
+  width: 24px;
+  fill: none;
+  stroke: currentcolor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.8;
+}
+
+.admin-empty-state h3 {
+  margin: 16px 0 0;
+  font-family: "Plus Jakarta Sans Variable", "Plus Jakarta Sans", sans-serif;
+  font-size: 17px;
+}
+
+.admin-empty-state p {
+  margin: 7px 0 0;
+  color: var(--abu);
+  font-size: 13px;
 }
 
 .po-page {
@@ -1624,6 +1992,27 @@ a:focus-visible {
   }
 }
 
+@media (max-width: 800px) {
+  .admin-intro__heading {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  .admin-overview {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-overview > div + div {
+    border-top: 1px solid rgb(92 101 112 / 14%);
+    border-left: 0;
+  }
+
+  .admin-pool-list {
+    grid-template-columns: 1fr;
+  }
+}
+
 @media (max-width: 640px) {
   .login-page {
     align-items: flex-start;
@@ -1632,6 +2021,10 @@ a:focus-visible {
 
   .role-header {
     padding: 0 12px 0 16px;
+  }
+
+  .admin-role-badge {
+    display: none;
   }
 
   .identity-row {
@@ -1680,13 +2073,53 @@ a:focus-visible {
     font-size: 16px;
   }
 
-  .admin-content,
+  .admin-content {
+    width: min(100% - 28px, 1080px);
+    padding-top: 24px;
+  }
+
   .allocation-content {
     padding-top: 24px;
   }
 
-  .admin-pool-list {
-    grid-template-columns: 1fr;
+  .admin-intro h1 {
+    font-size: 28px;
+  }
+
+  .admin-intro__heading p {
+    font-size: 14px;
+  }
+
+  .admin-overview {
+    margin-top: 24px;
+  }
+
+  .admin-overview > div {
+    padding: 17px 18px;
+  }
+
+  .admin-pools {
+    margin-top: 34px;
+  }
+
+  .admin-pool-card {
+    padding: 20px 18px;
+  }
+
+  .admin-pool-card__info,
+  .admin-pool-card__tier,
+  .admin-pool-progress__copy {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .admin-pool-card__participants {
+    align-self: flex-start;
+  }
+
+  .admin-pool-progress__copy strong,
+  .admin-pool-card__price {
+    text-align: left;
   }
 
   .po-document {
