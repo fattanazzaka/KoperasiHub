@@ -47,9 +47,14 @@ const pol = (n: number) => n.toLocaleString("id-ID");
 async function main() {
   loadEnv();
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  // Terima key rahasia format baru (sb_secret_...) maupun service_role lama.
+  const key =
+    process.env.SUPABASE_SECRET_KEY ?? process.env.SUPABASE_SERVICE_ROLE_KEY;
   if (!url || !key) {
-    console.error("\n❌ Butuh NEXT_PUBLIC_SUPABASE_URL & SUPABASE_SERVICE_ROLE_KEY di .env.\n");
+    console.error(
+      "\n❌ Butuh NEXT_PUBLIC_SUPABASE_URL + (SUPABASE_SECRET_KEY atau " +
+        "SUPABASE_SERVICE_ROLE_KEY) di .env.\n",
+    );
     process.exit(1);
   }
   const sb = createClient(url, key, {
