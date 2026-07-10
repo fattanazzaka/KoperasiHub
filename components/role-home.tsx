@@ -2,6 +2,7 @@ import Link from "next/link";
 
 import { logoutAction } from "@/app/actions/auth";
 import { BrandMark } from "@/components/brand-mark";
+import { RecommendationCards } from "@/components/recommendation-cards";
 import type { AuthContext } from "@/lib/auth";
 
 type RoleHomeProps = {
@@ -61,6 +62,8 @@ export function RoleHome({ auth }: RoleHomeProps) {
             </p>
           </div>
         </article>
+
+        {!isAdmin ? <RecommendationCards /> : null}
 
         {!isAdmin ? (
           <div className="home-actions">

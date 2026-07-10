@@ -10,6 +10,7 @@ import {
 import {
   describeEligibility,
   evaluateSupplierEligibility,
+  type EligibilityResult,
 } from "@/lib/cross-supply";
 import {
   windowOptions,
@@ -23,6 +24,9 @@ type DemandFormProps = {
   wilayah: string;
   kodeWilayah: string | null;
   initialCommodityId?: string;
+  // Pre-fill dari deep-link kartu rekomendasi (US-09 AC3) — tetap bisa diedit.
+  initialVolume?: number;
+  initialPrice?: number;
 };
 
 const initialState: DemandActionState = {
@@ -67,6 +71,8 @@ export function DemandForm({
   wilayah,
   kodeWilayah,
   initialCommodityId,
+  initialVolume,
+  initialPrice,
 }: DemandFormProps) {
   const defaultCommodityId =
     initialCommodityId &&
@@ -89,12 +95,25 @@ export function DemandForm({
   );
   const isDemand = role === "demand";
   const defaults = commodityDefaults[commodityId] ?? fallbackDefaults;
-  // Hint kualifikasi pemasok (ADDENDUM §3) — hanya relevan saat menawarkan suplai.
-  // Gerbang sebenarnya tetap di server action; ini hanya feedback UX.
-  const supplyEligibility = useMemo(
-    () => evaluateSupplierEligibility({ kodeWilayah }, commodityId),
-    [kodeWilayah, commodityId],
-  );
+  // Pre-fill deep-link hanya berlaku untuk komoditas yang direkomendasikan &
+  // peran demand; ganti komoditas/peran → kembali ke default biasa. Input tetap
+  // editable (hanya defaultValue; remount via key saat role/komoditas berubah).
+  const prefillActive = isDemand && commodityId === defaultCommodityId;
+  const volumeDefault =
+    prefillActive && initialVolume ? initialVolume : undefined;
+  const priceDefault = prefillActive && initialPrice ? initialPrice : undefined;
+  // Eligibilitas cross-supply (ADDENDUM §3) per komoditas untuk peran suplai.
+  // Gerbang sebenarnya tetap di server action; ini hanya feedback & guard UX.
+  const supplyEligibilityByCommodity = useMemo(() => {
+    const map: Record<string, EligibilityResult> = {};
+    for (const item of commodities) {
+      map[item.id] = evaluateSupplierEligibility({ kodeWilayah }, item.id);
+    }
+    return map;
+  }, [commodities, kodeWilayah]);
+  const supplyEligibility =
+    supplyEligibilityByCommodity[commodityId] ??
+    evaluateSupplierEligibility({ kodeWilayah }, commodityId);
   const blockSupply = !isDemand && !supplyEligibility.eligible;
 
   return (
@@ -136,11 +155,21 @@ export function DemandForm({
             aria-invalid={Boolean(state.fieldErrors.commodity)}
             aria-describedby={state.fieldErrors.commodity ? "commodity-error" : undefined}
           >
-            {commodities.map((item) => (
-              <option key={item.id} value={item.id}>
-                {item.nama}
-              </option>
-            ))}
+            {commodities.map((item) => {
+              const supplyResult = supplyEligibilityByCommodity[item.id];
+              const optionBlocked = !isDemand && !supplyResult?.eligible;
+              const suffix = !optionBlocked
+                ? ""
+                : supplyResult?.reason === "blocked_channel"
+                  ? " — wajib pooling"
+                  : " — wilayah tak terkualifikasi";
+              return (
+                <option key={item.id} value={item.id} disabled={optionBlocked}>
+                  {item.nama}
+                  {suffix}
+                </option>
+              );
+            })}
           </select>
           {state.fieldErrors.commodity ? (
             <small className="field-error" id="commodity-error">
@@ -172,7 +201,8 @@ export function DemandForm({
               max="1000000"
               step="1"
               defaultValue={
-                isDemand ? defaults.demandVolume : defaults.supplyVolume
+                volumeDefault ??
+                (isDemand ? defaults.demandVolume : defaults.supplyVolume)
               }
               aria-invalid={Boolean(state.fieldErrors.volume)}
               aria-describedby={state.fieldErrors.volume ? "volume-error" : undefined}
@@ -205,7 +235,10 @@ export function DemandForm({
               min="1"
               max="1000000000"
               step="1"
-              defaultValue={isDemand ? defaults.demandPrice : defaults.supplyPrice}
+              defaultValue={
+                priceDefault ??
+                (isDemand ? defaults.demandPrice : defaults.supplyPrice)
+              }
               aria-invalid={Boolean(state.fieldErrors.price)}
               aria-describedby={state.fieldErrors.price ? "price-error" : "price-help"}
               required

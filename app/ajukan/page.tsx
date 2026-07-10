@@ -10,8 +10,17 @@ export const metadata = {
 };
 
 type SubmitDemandPageProps = {
-  searchParams: Promise<{ commodity?: string }>;
+  searchParams: Promise<{ commodity?: string; qty?: string; baseline?: string }>;
 };
+
+/** Parse angka positif dari query deep-link; selain itu abaikan (pakai default form). */
+function parsePositiveInt(value: string | undefined): number | undefined {
+  if (!value || !/^\d+$/.test(value)) {
+    return undefined;
+  }
+  const parsed = Number(value);
+  return Number.isSafeInteger(parsed) && parsed > 0 ? parsed : undefined;
+}
 
 export default async function SubmitDemandPage({
   searchParams,
@@ -26,7 +35,7 @@ export default async function SubmitDemandPage({
     redirect(getRoleDestination(auth.role));
   }
 
-  const { commodity } = await searchParams;
+  const { commodity, qty, baseline } = await searchParams;
 
   return (
     <main className="form-page">
@@ -46,6 +55,8 @@ export default async function SubmitDemandPage({
           wilayah={auth.cooperative.kabupaten}
           kodeWilayah={auth.cooperative.kodeWilayah}
           initialCommodityId={commodity ?? "minyak_kita"}
+          initialVolume={parsePositiveInt(qty)}
+          initialPrice={parsePositiveInt(baseline)}
         />
       </section>
     </main>

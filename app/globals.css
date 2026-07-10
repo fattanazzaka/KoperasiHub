@@ -211,6 +211,186 @@ a:focus-visible {
   background: rgb(200 30 30 / 7%);
 }
 
+/* --- Rekomendasi Pengadaan Cerdas (US-09) --------------------------------- */
+
+.rec-section {
+  margin-top: 24px;
+}
+
+.rec-section__title {
+  margin: 0 0 12px;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.rec-card {
+  padding: 16px;
+  border: 1px solid rgb(92 101 112 / 18%);
+  border-radius: 12px;
+  background: var(--kartu);
+}
+
+.rec-card + .rec-card {
+  margin-top: 12px;
+}
+
+.rec-card__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.rec-card__header h3 {
+  margin: 0;
+  font-size: 16px;
+}
+
+.rec-badge-het {
+  padding: 3px 8px;
+  border-radius: 999px;
+  color: var(--merah-tua);
+  background: rgb(200 30 30 / 10%);
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.rec-card__narasi {
+  margin: 8px 0 0;
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.rec-card__stok {
+  margin: 8px 0 0;
+  color: var(--abu);
+  font-size: 13px;
+}
+
+.rec-card__stok strong {
+  color: var(--tinta);
+}
+
+.rec-card__pool .pool-card__progress {
+  margin-top: 12px;
+}
+
+.rec-card__hemat {
+  margin: 10px 0 0;
+  color: var(--abu);
+  font-size: 13px;
+}
+
+/* Hijau HANYA untuk angka hemat — konsisten token hemat di seluruh app. */
+.rec-card__hemat strong {
+  color: var(--hijau-hemat);
+  font-size: 15px;
+  font-variant-numeric: tabular-nums;
+}
+
+.rec-card__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 14px;
+}
+
+/* Merah HANYA untuk aksi (CTA) — mengikuti pola .primary-link. */
+.rec-cta {
+  display: inline-flex;
+  min-height: 40px;
+  align-items: center;
+  gap: 8px;
+  padding: 0 16px;
+  border-radius: 8px;
+  color: #fff;
+  background: var(--merah);
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 150ms ease;
+}
+
+.rec-cta:hover {
+  background: var(--merah-tua);
+}
+
+.rec-why__toggle {
+  padding: 0;
+  border: none;
+  color: var(--abu);
+  background: none;
+  font-size: 13px;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.rec-why__body {
+  margin-top: 12px;
+  padding: 12px;
+  border-radius: 8px;
+  background: rgb(92 101 112 / 7%);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.rec-why__body > p {
+  margin: 0 0 8px;
+}
+
+.rec-why__body ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.rec-why__body li {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 3px 0;
+}
+
+.rec-why__body li.is-muted {
+  color: var(--abu);
+  opacity: 0.6;
+}
+
+.rec-why__body li strong {
+  font-variant-numeric: tabular-nums;
+}
+
+.rec-why__total {
+  margin: 8px 0 0 !important;
+  color: var(--abu);
+}
+
+.rec-card.is-loading {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.rec-skeleton {
+  display: block;
+  height: 14px;
+  border-radius: 4px;
+  background: rgb(92 101 112 / 12%);
+  animation: rec-pulse 1.2s ease-in-out infinite;
+}
+
+.rec-skeleton.is-short {
+  width: 60%;
+}
+
+@keyframes rec-pulse {
+  50% {
+    opacity: 0.45;
+  }
+}
+
 .demo-account {
   padding: 12px 16px;
   border: 1px solid rgb(92 101 112 / 15%);

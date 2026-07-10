@@ -125,7 +125,7 @@ export function describeEligibility(result: EligibilityResult): string {
     case "blocked_channel":
       return "Komoditas program/HET ini wajib lewat kanal pooling, bukan cross-supply.";
     case "not_produced_in_region":
-      return "Wilayah Anda belum terkualifikasi sebagai pemasok komoditas ini menurut data SIMKOPDES.";
+      return "Koperasi Anda belum terkualifikasi memasok komoditas ini karena tidak tercatat sebagai produksi wilayah Anda di data SIMKOPDES.";
     case "unknown_region":
       return "Kode wilayah koperasi belum tersedia — tidak dapat memverifikasi kualifikasi pemasok.";
   }
