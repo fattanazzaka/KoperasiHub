@@ -1,7 +1,5 @@
 import Link from "next/link";
 
-import { logoutAction } from "@/app/actions/auth";
-import { BrandMark } from "@/components/brand-mark";
 import type { SettlementDetail, SettlementLeg } from "@/lib/settlement";
 
 type SettlementPanelProps = {
@@ -34,19 +32,10 @@ export function SettlementPanel({ settlement, backHref }: SettlementPanelProps) 
   return (
     <main className="role-page">
       <header className="role-header">
-        <div className="role-header__brand">
-          <BrandMark size="compact" />
-          <span>KoperasiHub</span>
-        </div>
         <div className="admin-header__actions">
           <Link className="text-button" href={backHref}>
             Kembali
           </Link>
-          <form action={logoutAction}>
-            <button className="text-button" type="submit">
-              Keluar
-            </button>
-          </form>
         </div>
       </header>
 
@@ -56,8 +45,8 @@ export function SettlementPanel({ settlement, backHref }: SettlementPanelProps) 
             <div>
               <h1>Net Settlement</h1>
               <p>
-                Saat dua koperasi saling memasok, tagihan dua arah dikompensasi.
-                Hanya selisih neto yang berpindah tunai — satu pembayaran, bukan dua.
+                Koperasi saling memasok, tagihan dua arah dikompensasi.
+                Hanya selisih neto yang berpindah tunai, SATU PEMBAYARAN.
               </p>
             </div>
           </div>

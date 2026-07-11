@@ -1,8 +1,6 @@
 import Link from "next/link";
 
-import { logoutAction } from "@/app/actions/auth";
 import { AdminPoolBoard } from "@/components/admin-pool-board";
-import { BrandMark } from "@/components/brand-mark";
 import type { PoolSummary } from "@/lib/pool-types";
 
 type AdminHubProps = {
@@ -26,20 +24,11 @@ export function AdminHub({ pools, issuedPoolIds }: AdminHubProps) {
   return (
     <main className="role-page">
       <header className="role-header">
-        <div className="role-header__brand">
-          <BrandMark size="compact" />
-          <span>KoperasiHub</span>
-        </div>
         <div className="admin-header__actions">
           <Link className="text-button" href="/settlement">
             Net Settlement
           </Link>
           <span className="admin-role-badge">Admin Hub</span>
-          <form action={logoutAction}>
-            <button className="text-button" type="submit">
-              Keluar
-            </button>
-          </form>
         </div>
       </header>
 

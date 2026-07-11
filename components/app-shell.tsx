@@ -1,8 +1,8 @@
 import Link from "next/link";
+import Image from "next/image";
 import type { ReactNode } from "react";
 
 import { logoutAction } from "@/app/actions/auth";
-import { BrandMark } from "@/components/brand-mark";
 import type { AuthContext } from "@/lib/auth";
 
 export type AppSection =
@@ -106,13 +106,32 @@ export function AppShell({ auth, active, children }: AppShellProps) {
 
   return (
     <div className={`app-shell${isAdmin ? " app-shell--admin" : ""}`}>
+      <header className="app-topbar">
+        <Link className="app-topbar__brand" href={isAdmin ? "/hub" : "/beranda"}>
+          <Image
+            alt="KoperasiHub"
+            height={40}
+            priority
+            src="/koperasihub-lockup-white.svg"
+            width={158}
+          />
+        </Link>
+        <form action={logoutAction}>
+          <button className="app-topbar__logout" type="submit">
+            Keluar
+          </button>
+        </form>
+      </header>
+
       <aside className="app-sidebar" aria-label="Navigasi utama">
         <Link className="app-sidebar__brand" href={isAdmin ? "/hub" : "/beranda"}>
-          <BrandMark size="compact" />
-          <span>
-            <strong>KoperasiHub</strong>
-            <small>Pengadaan Bersama</small>
-          </span>
+          <Image
+            alt="KoperasiHub"
+            height={64}
+            priority
+            src="/koperasihub-lockup-white.svg"
+            width={252}
+          />
         </Link>
 
         <nav className="app-sidebar__nav">

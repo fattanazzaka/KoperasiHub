@@ -84,12 +84,14 @@ select s.id, 'minyak_kita', t.nama_tier, t.min_volume, t.harga
 from (values ('D1',2000,14000), ('Produsen',5000,13500)) as t(nama_tier,min_volume,harga)
 cross join (select id from public.suppliers where nama='PT Distribusi Nusantara') s;
 
--- Telur: tiga label sumber (termurah = koperasi produsen)
+-- Telur: tiga label sumber (termurah = koperasi produsen). Semua di ambang Tier Grosir
+-- 1.000 kg (docs/07 §6) agar tangga tier monotonik & pool tidak "tercapai" pada 60% —
+-- penawaran Cilegon adalah sumber cross-supply termurah, bukan tier bervolume kecil (KH-03).
 insert into public.price_tiers (supplier_id, commodity_id, nama_tier, min_volume, harga_per_unit)
 values
   ((select id from public.suppliers where nama='CV Sumber Protein'),'telur','Grosir',1000,26500),
   ((select id from public.suppliers where nama='ID FOOD (Holding Pangan)'),'telur','Kontrak BUMN',1000,26000),
-  ((select id from public.suppliers where nama='KDMP Cilegon'),'telur','Ternak Anggota',300,25000);
+  ((select id from public.suppliers where nama='KDMP Cilegon'),'telur','Ternak Anggota',1000,25000);
 
 -- --- Pools -------------------------------------------------------------------------
 insert into public.pools (commodity_id, wilayah, window_start, window_end, status) values

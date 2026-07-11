@@ -33,21 +33,28 @@ function unwrapRelation<T>(value: T | T[] | null | undefined): T | null {
   return Array.isArray(value) ? (value[0] ?? null) : (value ?? null);
 }
 
+const PO_MONTH_ROMAN = [
+  "I",
+  "II",
+  "III",
+  "IV",
+  "V",
+  "VI",
+  "VII",
+  "VIII",
+  "IX",
+  "X",
+  "XI",
+  "XII",
+] as const;
+
+function poNumberPrefix(now: Date = new Date()): string {
+  return `PO-KSL/${now.getFullYear()}/${PO_MONTH_ROMAN[now.getMonth()]}/`;
+}
+
+// Jalur demo (cookie, maksimal 1 PO): nomor tetap per-komoditas sudah cukup & tidak
+// pernah tabrakan karena hanya satu PO tersimpan.
 function createPoNumber(commodityId: string): string {
-  const monthRoman = [
-    "I",
-    "II",
-    "III",
-    "IV",
-    "V",
-    "VI",
-    "VII",
-    "VIII",
-    "IX",
-    "X",
-    "XI",
-    "XII",
-  ][new Date().getMonth()];
   const sequenceByCommodity: Record<string, string> = {
     beras: "0042",
     minyak_kita: "0043",
@@ -55,9 +62,25 @@ function createPoNumber(commodityId: string): string {
     gula: "0045",
   };
 
-  return `PO-KSL/${new Date().getFullYear()}/${monthRoman}/${
-    sequenceByCommodity[commodityId] ?? "0099"
-  }`;
+  return `${poNumberPrefix()}${sequenceByCommodity[commodityId] ?? "0099"}`;
+}
+
+// Jalur Supabase: sequence berjalan per bulan (maks yang ada + 1) agar dua pool komoditas
+// sama di bulan yang sama tidak menabrak unique constraint po_number → pool macet 'locked' (KH-06).
+async function nextConsolidatedPoNumber(
+  supabase: Awaited<ReturnType<typeof createSupabaseServerClient>>,
+): Promise<string> {
+  const prefix = poNumberPrefix();
+  const { data } = await supabase
+    .from("pools")
+    .select("po_number")
+    .like("po_number", `${prefix}%`);
+  const maxSequence = (data ?? []).reduce((max, row) => {
+    const parsed = Number.parseInt(String(row.po_number).slice(prefix.length), 10);
+    return Number.isFinite(parsed) && parsed > max ? parsed : max;
+  }, 41);
+
+  return `${prefix}${String(maxSequence + 1).padStart(4, "0")}`;
 }
 
 function toOrderSummary(
@@ -270,7 +293,7 @@ async function issueSupabasePurchaseOrder(
   }
 
   const allocations = buildAllocations([...members.values()], eligibleTier.pricePerUnit);
-  const poNumber = createPoNumber(poolDetail.commodityId);
+  const poNumber = await nextConsolidatedPoNumber(supabase);
   const { error: lockError } = await supabase
     .from("pools")
     .update({ status: "locked", selected_tier_id: eligibleTier.id })

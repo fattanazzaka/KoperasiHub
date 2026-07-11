@@ -65,7 +65,19 @@ function deriveProgress(
   baseTotalVolume: number,
   tiers: PoolTier[],
 ): PoolProgress {
-  const orderedTiers = [...tiers].sort((a, b) => a.minVolume - b.minVolume);
+  // Tangga tier harus monotonik: volume lebih besar = harga lebih murah. Buang tier
+  // yang bukan diskon nyata (harga >= tier bervolume lebih kecil) agar penawaran
+  // produsen bervolume kecil tidak salah menggerbangkan penerbitan PO dan "target
+  // berikutnya" tidak pernah tampil lebih mahal daripada tier yang sudah dicapai (KH-03).
+  const ascendingByVolume = [...tiers].sort((a, b) => a.minVolume - b.minVolume);
+  const orderedTiers: PoolTier[] = [];
+  let bestPriceSoFar = Number.POSITIVE_INFINITY;
+  for (const tier of ascendingByVolume) {
+    if (tier.pricePerUnit < bestPriceSoFar) {
+      orderedTiers.push(tier);
+      bestPriceSoFar = tier.pricePerUnit;
+    }
+  }
   const newlyReached = orderedTiers
     .filter(
       (tier) =>

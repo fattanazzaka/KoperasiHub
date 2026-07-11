@@ -1,5 +1,3 @@
-import { logoutAction } from "@/app/actions/auth";
-import { BrandMark } from "@/components/brand-mark";
 import { PoolLoop } from "@/components/pool-loop";
 import { RecommendationCards } from "@/components/recommendation-cards";
 import type { AuthContext } from "@/lib/auth";
@@ -27,18 +25,6 @@ export function RoleHome({ auth, pools, allocations }: RoleHomeProps) {
 
   return (
     <main className="role-page">
-      <header className="role-header">
-        <div className="role-header__brand">
-          <BrandMark size="compact" />
-          <span>KoperasiHub</span>
-        </div>
-        <form action={logoutAction}>
-          <button className="text-button" type="submit">
-            Keluar
-          </button>
-        </form>
-      </header>
-
       <section className="role-content">
         <div className="identity-row">
           <div>

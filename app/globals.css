@@ -414,14 +414,16 @@ a:focus-visible {
   display: flex;
   height: 64px;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-end;
   padding: 0 20px;
   border-bottom: 1px solid rgb(92 101 112 / 15%);
   background: var(--kartu);
 }
 
+/* Brand di role-header kini digantikan logo lockup di .app-topbar (mobile) agar
+   logo sidebar tetap tampil di mobile tanpa penandaan ganda. */
 .role-header__brand {
-  display: flex;
+  display: none;
   align-items: center;
   gap: 10px;
   font-family: "Plus Jakarta Sans Variable", "Plus Jakarta Sans", sans-serif;
@@ -2542,6 +2544,44 @@ a:focus-visible {
   display: none;
 }
 
+.app-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  height: 52px;
+  padding: 0 8px 0 16px;
+  border-bottom: 1px solid var(--merah-tua);
+  background: var(--merah);
+}
+
+.app-topbar__brand {
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+}
+
+.app-topbar__brand img {
+  width: auto;
+  height: 30px;
+}
+
+.app-topbar__logout {
+  min-height: 44px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: 8px;
+  color: #fff;
+  background: transparent;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.app-topbar__logout:hover {
+  background: var(--merah-tua);
+}
+
 .app-bottom-nav {
   position: fixed;
   z-index: 50;
@@ -2982,27 +3022,21 @@ a:focus-visible {
 
   .app-sidebar__brand {
     display: flex;
-    height: 78px;
+    height: 96px;
     align-items: center;
-    gap: 11px;
-    padding: 0 20px;
-    border-bottom: 1px solid #e1e4e8;
-    color: var(--tinta);
+    padding: 0 22px;
+    border-bottom: 1px solid var(--merah-tua);
+    background: var(--merah);
     text-decoration: none;
   }
 
-  .app-sidebar__brand > span {
-    display: grid;
-    gap: 2px;
+  .app-sidebar__brand:hover {
+    background: var(--merah-tua);
   }
 
-  .app-sidebar__brand strong {
-    font-size: 15px;
-  }
-
-  .app-sidebar__brand small {
-    color: var(--abu);
-    font-size: 11px;
+  .app-sidebar__brand img {
+    width: min(100%, 194px);
+    height: auto;
   }
 
   .app-sidebar__nav {
@@ -3119,6 +3153,10 @@ a:focus-visible {
     font-size: 11px;
     font-weight: 600;
     cursor: pointer;
+  }
+
+  .app-topbar {
+    display: none;
   }
 
   .app-bottom-nav {
@@ -3396,6 +3434,10 @@ a:focus-visible {
 
 .rec-card__metrics .is-savings dd {
   color: var(--hijau-hemat);
+}
+
+.rec-card__metrics dd.rec-metric-na {
+  color: #a0a6ad;
 }
 
 .app-shell .rec-card__pool {

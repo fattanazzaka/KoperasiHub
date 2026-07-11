@@ -150,9 +150,13 @@ export function RecommendationCards() {
                     {card.qty_saran.toLocaleString("id-ID")} {card.satuan}
                   </dd>
                 </div>
-                <div className="is-savings">
+                <div className={card.hemat_estimasi > 0 ? "is-savings" : undefined}>
                   <dt>Potensi hemat</dt>
-                  <dd>{formatRupiah(card.hemat_estimasi)}</dd>
+                  <dd className={card.hemat_estimasi > 0 ? undefined : "rec-metric-na"}>
+                    {card.hemat_estimasi > 0
+                      ? formatRupiah(card.hemat_estimasi)
+                      : "—"}
+                  </dd>
                 </div>
               </dl>
 
