@@ -59,7 +59,6 @@ export function AdminPoolBoard({ pools, issuedPoolIds }: AdminPoolBoardProps) {
     <section className="admin-pools" aria-labelledby="admin-pools-title">
       <div className="admin-section-heading">
         <div>
-          <p className="eyebrow">Antrean operasional</p>
           <h2 id="admin-pools-title">Pool Permintaan</h2>
         </div>
         <span>{pools.length} pool tercatat</span>

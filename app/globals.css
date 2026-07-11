@@ -3137,7 +3137,7 @@ a:focus-visible {
   .app-shell .form-header {
     position: static;
     height: auto;
-    padding: 0 0 20px;
+    padding: 32px clamp(64px, 7vw, 112px) 20px;
     border-bottom: 1px solid #d7dbe0;
     background: transparent;
     backdrop-filter: none;
@@ -3168,12 +3168,14 @@ a:focus-visible {
     width: auto;
     max-width: none;
     margin: 0;
-    padding: 34px clamp(28px, 4vw, 64px) 64px;
+    padding: 34px clamp(40px, 5vw, 80px) 64px;
   }
 
   .app-shell .form-content {
-    width: min(760px, 100%);
+    width: 100%;
     margin: 0;
+    padding-right: clamp(64px, 7vw, 112px);
+    padding-left: clamp(64px, 7vw, 112px);
   }
 
   .app-shell .pool-detail {

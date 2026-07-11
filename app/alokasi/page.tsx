@@ -35,7 +35,6 @@ export default async function AllocationPage() {
 
       <section className="allocation-content">
         <div className="allocation-intro">
-          <p className="eyebrow">Alokasi Proporsional</p>
           <h2>PO yang Anda ikuti</h2>
         </div>
         <AllocationList allocations={allocations} />

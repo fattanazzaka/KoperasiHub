@@ -37,7 +37,6 @@ export default async function PoolListPage() {
 
       <section className="pool-list">
         <div className="pool-list__intro">
-          <p className="eyebrow">Pengadaan bersama</p>
           <h2>Pool aktif di jaringan Anda</h2>
           <p>Pantau volume terkumpul dan Ambang Tier berikutnya.</p>
         </div>

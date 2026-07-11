@@ -45,7 +45,6 @@ export function AdminHub({ pools, issuedPoolIds }: AdminHubProps) {
 
       <section className="admin-content">
         <div className="admin-intro">
-          <p className="eyebrow">Kontrol Pengadaan Bersama</p>
           <div className="admin-intro__heading">
             <div>
               <h1>Pusat Kendali Pool</h1>

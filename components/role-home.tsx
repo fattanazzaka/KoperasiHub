@@ -47,14 +47,6 @@ export function RoleHome({ auth, pools, allocations }: RoleHomeProps) {
               {auth.cooperative?.kabupaten}, {auth.cooperative?.provinsi}
             </p>
           </div>
-          {auth.cooperative?.simkopdesVerified ? (
-            <span className="verified-badge">
-              <svg viewBox="0 0 20 20" aria-hidden="true">
-                <path d="m6 10 2.4 2.4L14 7" />
-              </svg>
-              Terverifikasi SIMKOPDES
-            </span>
-          ) : null}
         </div>
 
         <dl className="home-summary" aria-label="Ringkasan koperasi">

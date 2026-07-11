@@ -52,7 +52,6 @@ export function SettlementPanel({ settlement, backHref }: SettlementPanelProps) 
 
       <section className="settlement-content">
         <div className="admin-intro">
-          <p className="eyebrow">Penyelesaian Bersih Antar-Koperasi</p>
           <div className="admin-intro__heading">
             <div>
               <h1>Net Settlement</h1>
