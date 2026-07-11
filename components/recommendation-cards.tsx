@@ -29,6 +29,7 @@ function deepLink(card: RecommendationCard): string {
     qty: String(card.qty_saran),
     baseline: String(card.harga_baseline),
   });
+  if (card.pool_ref) params.set("pool", card.pool_ref);
   return `/ajukan?${params.toString()}`;
 }
 

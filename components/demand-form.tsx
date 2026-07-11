@@ -15,6 +15,7 @@ import {
 import {
   windowOptions,
   type DemandRole,
+  type WindowOption,
 } from "@/lib/demand";
 import type { DevCommodity } from "@/lib/dev-fixture";
 
@@ -24,6 +25,12 @@ type DemandFormProps = {
   wilayah: string;
   kodeWilayah: string | null;
   initialCommodityId?: string;
+  initialPool?: {
+    id: string;
+    commodityId: string;
+    wilayah: string;
+    windowOption: WindowOption;
+  };
   // Pre-fill dari deep-link kartu rekomendasi (US-09 AC3) — tetap bisa diedit.
   initialVolume?: number;
   initialPrice?: number;
@@ -44,6 +51,18 @@ const commodityDefaults: Record<
     supplyPrice: number;
   }
 > = {
+  beras: {
+    demandVolume: 800,
+    demandPrice: 15_358,
+    supplyVolume: 1_500,
+    supplyPrice: 14_700,
+  },
+  beras_lokal: {
+    demandVolume: 800,
+    demandPrice: 13_800,
+    supplyVolume: 1_500,
+    supplyPrice: 12_900,
+  },
   minyak_kita: {
     demandVolume: 400,
     demandPrice: 15_700,
@@ -55,6 +74,18 @@ const commodityDefaults: Record<
     demandPrice: 28_000,
     supplyVolume: 800,
     supplyPrice: 25_000,
+  },
+  gula: {
+    demandVolume: 500,
+    demandPrice: 17_500,
+    supplyVolume: 1_000,
+    supplyPrice: 16_200,
+  },
+  lpg_3kg: {
+    demandVolume: 300,
+    demandPrice: 6_500,
+    supplyVolume: 300,
+    supplyPrice: 6_000,
   },
 };
 
@@ -71,6 +102,7 @@ export function DemandForm({
   wilayah,
   kodeWilayah,
   initialCommodityId,
+  initialPool,
   initialVolume,
   initialPrice,
 }: DemandFormProps) {
@@ -81,6 +113,9 @@ export function DemandForm({
       : (commodities[0]?.id ?? "");
   const [role, setRole] = useState<DemandRole>("demand");
   const [commodityId, setCommodityId] = useState<string>(defaultCommodityId);
+  const [windowOption, setWindowOption] = useState<WindowOption>(
+    initialPool?.windowOption ?? "week",
+  );
   const [dismissedSubmission, setDismissedSubmission] = useState<string | null>(null);
   const [state, formAction, isPending] = useActionState(
     submitDemandAction,
@@ -94,6 +129,13 @@ export function DemandForm({
     state.success && state.success.submissionId !== dismissedSubmission,
   );
   const isDemand = role === "demand";
+  const usesSelectedPool = Boolean(
+    isDemand &&
+      initialPool &&
+      commodityId === initialPool.commodityId &&
+      windowOption === initialPool.windowOption,
+  );
+  const poolWilayah = usesSelectedPool ? initialPool!.wilayah : wilayah;
   const defaults = commodityDefaults[commodityId] ?? fallbackDefaults;
   // Pre-fill deep-link hanya berlaku untuk komoditas yang direkomendasikan &
   // peran demand; ganti komoditas/peran → kembali ke default biasa. Input tetap
@@ -120,6 +162,9 @@ export function DemandForm({
     <>
       <form className="demand-form" action={formAction} noValidate>
         <input type="hidden" name="role" value={role} />
+        {usesSelectedPool ? (
+          <input type="hidden" name="pool" value={initialPool!.id} />
+        ) : null}
 
         <fieldset className="role-segment" aria-label="Peran pengajuan">
           <button
@@ -260,7 +305,10 @@ export function DemandForm({
           <span>Jendela waktu</span>
           <select
             name="window"
-            defaultValue="week"
+            value={windowOption}
+            onChange={(event) =>
+              setWindowOption(event.target.value as WindowOption)
+            }
             aria-invalid={Boolean(state.fieldErrors.window)}
             aria-describedby={state.fieldErrors.window ? "window-error" : undefined}
           >
@@ -279,8 +327,12 @@ export function DemandForm({
 
         <label className="field-group">
           <span>Wilayah pool</span>
-          <input value={wilayah} readOnly aria-readonly="true" />
-          <small className="field-help">Mengikuti profil {cooperativeName}.</small>
+          <input value={poolWilayah} readOnly aria-readonly="true" />
+          <small className="field-help">
+            {usesSelectedPool
+              ? "Mengikuti pool yang Anda pilih. Ganti komoditas atau jendela waktu untuk membuka pool lain."
+              : `Mengikuti profil ${cooperativeName}.`}
+          </small>
         </label>
 
         {state.formError ? (

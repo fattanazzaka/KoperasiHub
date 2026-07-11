@@ -238,7 +238,7 @@ export function PoolDetailView({ pool }: PoolDetailViewProps) {
       ) : (
         <Link
           className="join-pool"
-          href={`/ajukan?commodity=${encodeURIComponent(pool.commodityId)}`}
+          href={`/ajukan?pool=${encodeURIComponent(pool.id)}&commodity=${encodeURIComponent(pool.commodityId)}`}
         >
           Gabung Pool Ini
         </Link>

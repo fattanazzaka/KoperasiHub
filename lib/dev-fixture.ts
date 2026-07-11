@@ -137,9 +137,37 @@ export const devCommodityMarkets: Record<
     ],
   },
   gula: {
-    baselinePrice: 0,
-    tiers: [],
-    sources: [],
+    baselinePrice: 17_500,
+    tiers: [
+      {
+        id: "tier-gula-distributor",
+        name: "Distributor",
+        minVolume: 1_000,
+        pricePerUnit: 16_800,
+      },
+      {
+        id: "tier-gula-kontrak",
+        name: "Kontrak Klaster",
+        minVolume: 5_000,
+        pricePerUnit: 16_200,
+      },
+    ],
+    sources: [
+      {
+        id: "supplier-id-food-gula",
+        name: "ID FOOD (Holding Pangan)",
+        type: "bumn",
+        location: "Jawa Timur",
+        pricePerUnit: 16_200,
+      },
+      {
+        id: "supplier-gula-nusantara",
+        name: "PT Gula Nusantara",
+        type: "distributor",
+        location: "Jawa Timur",
+        pricePerUnit: 16_800,
+      },
+    ],
   },
   // Beras produsen lokal (non-SPHP) — komoditas kanal CROSS-SUPPLY yang valid.
   // Turunan dari padi; koperasi di kabupaten produsen padi boleh memasoknya.
@@ -163,13 +191,33 @@ export const devCommodityMarkets: Record<
       },
     ],
   },
-  // LPG 3kg — barang program/HET. Ada di katalog HANYA untuk mendemokan blokir
-  // kanal cross-supply (wajib lewat pooling). Market sengaja kosong: bukan panggung
-  // Tangga Tier, jadi tidak memuat angka harga yang bisa menyesatkan.
+  // LPG 3kg tetap dapat dibeli melalui Pool Permintaan, sedangkan penawaran
+  // cross-supply diblokir oleh aturan eligibilitas barang program/HET.
   lpg_3kg: {
-    baselinePrice: 0,
-    tiers: [],
-    sources: [],
+    baselinePrice: 6_500,
+    tiers: [
+      {
+        id: "tier-lpg-pangkalan",
+        name: "Pangkalan",
+        minVolume: 300,
+        pricePerUnit: 6_000,
+      },
+      {
+        id: "tier-lpg-klaster",
+        name: "Distribusi Klaster",
+        minVolume: 1_500,
+        pricePerUnit: 5_500,
+      },
+    ],
+    sources: [
+      {
+        id: "supplier-patra-niaga",
+        name: "Pertamina Patra Niaga",
+        type: "bumn",
+        location: "Jawa Timur",
+        pricePerUnit: 5_500,
+      },
+    ],
   },
   telur: {
     baselinePrice: 28_000,
@@ -340,6 +388,33 @@ export const devPools: readonly DevPoolFixture[] = [
         baselinePrice: 54_200,
       },
     ],
+  },
+  {
+    id: "pool-gula-blitar",
+    commodityId: "gula",
+    wilayah: "Blitar",
+    windowOption: "week",
+    baseTotalVolume: 800,
+    baseParticipantCount: 4,
+    baseMembers: [],
+  },
+  {
+    id: "pool-beras-lokal-blitar",
+    commodityId: "beras_lokal",
+    wilayah: "Blitar",
+    windowOption: "week",
+    baseTotalVolume: 700,
+    baseParticipantCount: 3,
+    baseMembers: [],
+  },
+  {
+    id: "pool-lpg-blitar",
+    commodityId: "lpg_3kg",
+    wilayah: "Blitar",
+    windowOption: "week",
+    baseTotalVolume: 210,
+    baseParticipantCount: 4,
+    baseMembers: [],
   },
 ] as const;
 

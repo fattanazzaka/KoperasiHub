@@ -11,9 +11,11 @@ import {
 } from "@/lib/cross-supply";
 import {
   type DemandFieldErrors,
+  resolveDemandWindow,
   validateDemandForm,
 } from "@/lib/demand";
-import { appendDemoDemand } from "@/lib/demo-demands";
+import { appendDemoDemand, getDemoDemands } from "@/lib/demo-demands";
+import { devPools } from "@/lib/dev-fixture";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 export type DemandSuccess = {
@@ -40,12 +42,13 @@ async function submitToSupabase(
   cooperativeId: string,
   wilayah: string,
   submission: Extract<ReturnType<typeof validateDemandForm>, { success: true }>["data"],
-): Promise<{ demandId: string; poolId: string } | null> {
+  targetPoolId: string | null,
+): Promise<{ demandId: string; poolId: string; wilayah: string } | null> {
   const supabase = await createSupabaseServerClient();
   const poolQuery = () =>
     supabase
       .from("pools")
-      .select("id")
+      .select("id, wilayah, window_start, window_end")
       .eq("commodity_id", submission.commodity.id)
       .eq("wilayah", wilayah)
       .eq("window_start", submission.windowStart)
@@ -53,9 +56,30 @@ async function submitToSupabase(
       .eq("status", "open")
       .maybeSingle();
 
-  let { data: pool, error: poolError } = await poolQuery();
+  let pool;
+  let poolError;
+
+  if (targetPoolId) {
+    const targetResult = await supabase
+      .from("pools")
+      .select("id, wilayah, window_start, window_end")
+      .eq("id", targetPoolId)
+      .eq("commodity_id", submission.commodity.id)
+      .eq("status", "open")
+      .maybeSingle();
+    pool = targetResult.data;
+    poolError = targetResult.error;
+  } else {
+    const poolResult = await poolQuery();
+    pool = poolResult.data;
+    poolError = poolResult.error;
+  }
 
   if (poolError) {
+    return null;
+  }
+
+  if (!pool && targetPoolId) {
     return null;
   }
 
@@ -69,7 +93,7 @@ async function submitToSupabase(
         window_end: submission.windowEnd,
         status: "open",
       })
-      .select("id")
+      .select("id, wilayah, window_start, window_end")
       .single();
 
     pool = result.data;
@@ -100,8 +124,13 @@ async function submitToSupabase(
     .single();
 
   return demand && !demandError
-    ? { demandId: demand.id, poolId: pool.id }
+    ? { demandId: demand.id, poolId: pool.id, wilayah: pool.wilayah }
     : null;
+}
+
+function readTargetPoolId(formData: FormData): string | null {
+  const value = formData.get("pool");
+  return typeof value === "string" && value.trim() ? value.trim() : null;
 }
 
 export async function submitDemandAction(
@@ -129,6 +158,7 @@ export async function submitDemandAction(
   }
 
   const submission = validation.data;
+  const targetPoolId = readTargetPoolId(formData);
 
   // Gerbang cross-supply (ADDENDUM §3): hanya penawaran suplai yang dibatasi;
   // koperasi pembeli (demand) tidak pernah dibatasi kanal.
@@ -147,18 +177,16 @@ export async function submitDemandAction(
     }
   }
 
-  const poolName = createPoolName(
-    submission.commodity.nama,
-    auth.cooperative.kabupaten,
-  );
   let demandId: string;
   let poolId: string;
+  let poolWilayah = auth.cooperative.kabupaten;
 
   if (isSupabaseConfigured()) {
     const result = await submitToSupabase(
       auth.cooperative.id,
       auth.cooperative.kabupaten,
       submission,
+      targetPoolId,
     );
 
     if (!result) {
@@ -171,32 +199,82 @@ export async function submitDemandAction(
 
     demandId = result.demandId;
     poolId = result.poolId;
+    poolWilayah = result.wilayah;
   } else {
+    const existingDemands = await getDemoDemands();
+    const fixture = targetPoolId
+      ? devPools.find(
+          (item) =>
+            item.id === targetPoolId &&
+            item.commodityId === submission.commodity.id,
+        )
+      : null;
+    const existingPoolDemand = targetPoolId
+      ? existingDemands.find(
+          (item) =>
+            item.poolId === targetPoolId &&
+            item.commodityId === submission.commodity.id,
+        )
+      : null;
+
+    if (targetPoolId && !fixture && !existingPoolDemand) {
+      return {
+        fieldErrors: {},
+        formError: "Pool yang dipilih tidak lagi tersedia untuk komoditas ini.",
+        success: null,
+      };
+    }
+
+    const fixtureWindow = fixture
+      ? resolveDemandWindow(fixture.windowOption)
+      : null;
+    const windowOption =
+      fixture?.windowOption ??
+      existingPoolDemand?.windowOption ??
+      submission.windowOption;
+    const windowStart =
+      fixtureWindow?.windowStart ??
+      existingPoolDemand?.windowStart ??
+      submission.windowStart;
+    const windowEnd =
+      fixtureWindow?.windowEnd ??
+      existingPoolDemand?.windowEnd ??
+      submission.windowEnd;
+    poolWilayah =
+      fixture?.wilayah ??
+      existingPoolDemand?.wilayah ??
+      auth.cooperative.kabupaten;
     demandId = crypto.randomUUID();
-    poolId = [
-      "demo",
-      submission.commodity.id,
-      auth.cooperative.kabupaten.toLowerCase(),
-      submission.windowStart,
-    ].join("-");
+    poolId =
+      targetPoolId ??
+      [
+        "demo",
+        submission.commodity.id,
+        poolWilayah.toLowerCase(),
+        windowStart,
+      ].join("-");
 
     await appendDemoDemand({
       id: demandId,
       poolId,
       cooperativeId: auth.cooperative.id,
       commodityId: submission.commodity.id,
-      wilayah: auth.cooperative.kabupaten,
+      wilayah: poolWilayah,
       role: submission.role,
       volume: submission.volume,
       price: submission.price,
-      windowOption: submission.windowOption,
-      windowStart: submission.windowStart,
-      windowEnd: submission.windowEnd,
+      windowOption,
+      windowStart,
+      windowEnd,
       createdAt: new Date().toISOString(),
     });
   }
 
   revalidatePath("/beranda");
+  revalidatePath("/pool");
+  revalidatePath(`/pool/${poolId}`);
+
+  const poolName = createPoolName(submission.commodity.nama, poolWilayah);
 
   return {
     fieldErrors: {},
@@ -205,7 +283,7 @@ export async function submitDemandAction(
       submissionId: demandId,
       poolId,
       poolName,
-      wilayah: auth.cooperative.kabupaten,
+      wilayah: poolWilayah,
       role: submission.role,
       volume: submission.volume,
       unit: submission.commodity.satuan,

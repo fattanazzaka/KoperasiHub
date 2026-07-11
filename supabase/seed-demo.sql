@@ -73,6 +73,8 @@ insert into public.suppliers (nama, tipe, cooperative_id, lokasi) values
   ('PT Distribusi Nusantara', 'distributor', null, 'Serang, Banten'),
   ('CV Sumber Protein', 'distributor', null, 'Serang, Banten'),
   ('ID FOOD (Holding Pangan)', 'bumn', null, 'Jakarta'),
+  ('Perum BULOG', 'bumn', null, 'Banten'),
+  ('Pertamina Patra Niaga', 'bumn', null, 'Banten'),
   ('KDMP Cilegon', 'koperasi',
      (select id from public.cooperatives where koperasi_ref = 'KOP-0008016CB39E'),
      'Kota Cilegon, Banten');
@@ -93,11 +95,27 @@ values
   ((select id from public.suppliers where nama='ID FOOD (Holding Pangan)'),'telur','Kontrak BUMN',1000,26000),
   ((select id from public.suppliers where nama='KDMP Cilegon'),'telur','Ternak Anggota',1000,25000);
 
+-- Semua komoditas yang dapat dipilih di form mempunyai Tangga Tier deterministik.
+insert into public.price_tiers
+  (supplier_id, commodity_id, nama_tier, min_volume, harga_per_unit)
+values
+  ((select id from public.suppliers where nama='Perum BULOG'),'beras','Grosir',5000,14574),
+  ((select id from public.suppliers where nama='Perum BULOG'),'beras','Penggilingan',20000,13765),
+  ((select id from public.suppliers where nama='PT Distribusi Nusantara'),'beras_lokal','Antar Koperasi',1000,12900),
+  ((select id from public.suppliers where nama='ID FOOD (Holding Pangan)'),'gula','Distributor',1000,16800),
+  ((select id from public.suppliers where nama='ID FOOD (Holding Pangan)'),'gula','Kontrak Klaster',5000,16200),
+  ((select id from public.suppliers where nama='Pertamina Patra Niaga'),'lpg_3kg','Pangkalan',300,6000),
+  ((select id from public.suppliers where nama='Pertamina Patra Niaga'),'lpg_3kg','Distribusi Klaster',1500,5500);
+
 -- --- Pools -------------------------------------------------------------------------
 insert into public.pools (commodity_id, wilayah, window_start, window_end, status) values
   ('minyak_kita','Kota Serang','2026-07-06','2026-07-12','open'),   -- Pool A (hero, 85%)
   ('minyak_kita','Kab. Serang','2026-07-06','2026-07-12','open'),   -- Pool B (latar, 40%)
-  ('telur','Kota Serang','2026-07-06','2026-07-12','open');          -- Pool C (cross-supply, 60%)
+  ('telur','Kota Serang','2026-07-06','2026-07-12','open'),          -- Pool C (cross-supply, 60%)
+  ('beras','Kota Serang','2026-07-06','2026-07-12','open'),
+  ('beras_lokal','Kota Serang','2026-07-06','2026-07-12','open'),
+  ('gula','Kota Serang','2026-07-06','2026-07-12','open'),
+  ('lpg_3kg','Kota Serang','2026-07-06','2026-07-12','open');
 
 -- PO historis (agar beranda juri tidak nol saat pertama login)
 insert into public.pools
@@ -150,6 +168,24 @@ cross join (select id from public.pools
               and window_start='2026-07-06') p
 where c.koperasi_ref = 'KOP-0008016CB39E';
 
+-- Pool tambahan memastikan setiap pilihan komoditas dapat didemokan end-to-end.
+insert into public.demands (pool_id, cooperative_id, role, volume, harga_baseline)
+select p.id, c.id, 'demand', d.volume, d.baseline
+from (values
+  ('beras','KOP-315C5EFCC96D',1200,15358),
+  ('beras','KOP-63AEF19F6654',1100,15400),
+  ('beras','KOP-F8A0C206EB72',1000,15250),
+  ('beras','KOP-CA604BC75944',950,15500),
+  ('beras_lokal','KOP-315C5EFCC96D',700,13800),
+  ('gula','KOP-63AEF19F6654',800,17500),
+  ('lpg_3kg','KOP-F8A0C206EB72',210,6500)
+) as d(commodity_id,ref,volume,baseline)
+join public.cooperatives c on c.koperasi_ref = d.ref
+join public.pools p
+  on p.commodity_id = d.commodity_id
+ and p.wilayah = 'Kota Serang'
+ and p.window_start = '2026-07-06';
+
 -- --- Allocations (PO historis) -----------------------------------------------------
 -- 5 koperasi, tier D1 (14.000). hemat = (baseline - 14.000) * volume; fee = 5% * hemat.
 insert into public.allocations (pool_id, cooperative_id, volume, harga_tier, hemat_rp, fee_rp)
@@ -169,8 +205,10 @@ cross join (select id from public.pools
 -- --- Settlement (P1) ---------------------------------------------------------------
 -- Cilegon pasok telur ke Serang (Rp20jt); Serang pasok minyak ke Cilegon (Rp14jt).
 -- Neto: Cilegon menerima Rp6.000.000.
-insert into public.settlements (coop_a, coop_b, tagihan_a_ke_b, tagihan_b_ke_a)
-select a.id, b.id, 20000000, 14000000
+insert into public.settlements
+  (id, coop_a, coop_b, tagihan_a_ke_b, tagihan_b_ke_a)
+select '70000000-0000-4000-8000-000000000001'::uuid,
+       a.id, b.id, 20000000, 14000000
 from public.cooperatives a, public.cooperatives b
 where a.koperasi_ref = 'KOP-0008016CB39E'   -- Cilegon
   and b.koperasi_ref = 'KOP-63AEF19F6654';  -- Unyur
