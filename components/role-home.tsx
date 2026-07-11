@@ -1,8 +1,6 @@
-import Link from "next/link";
-
 import { logoutAction } from "@/app/actions/auth";
 import { BrandMark } from "@/components/brand-mark";
-import { PoolCard } from "@/components/pool-card";
+import { PoolLoop } from "@/components/pool-loop";
 import { RecommendationCards } from "@/components/recommendation-cards";
 import type { AuthContext } from "@/lib/auth";
 import type { PoolSummary } from "@/lib/pool-types";
@@ -25,8 +23,7 @@ export function RoleHome({ auth, pools, allocations }: RoleHomeProps) {
   );
   const activePools = pools.filter((pool) => pool.status === "open");
   const priorityPools = [...activePools]
-    .sort((a, b) => b.progress.progressPercent - a.progress.progressPercent)
-    .slice(0, 2);
+    .sort((a, b) => b.progress.progressPercent - a.progress.progressPercent);
 
   return (
     <main className="role-page">
@@ -45,7 +42,6 @@ export function RoleHome({ auth, pools, allocations }: RoleHomeProps) {
       <section className="role-content">
         <div className="identity-row">
           <div>
-            <p className="eyebrow">Beranda koperasi</p>
             <h1>{auth.cooperative?.nama}</h1>
             <p className="identity-row__location">
               {auth.cooperative?.kabupaten}, {auth.cooperative?.provinsi}
@@ -65,17 +61,14 @@ export function RoleHome({ auth, pools, allocations }: RoleHomeProps) {
           <div>
             <dt>Total hemat</dt>
             <dd className="is-savings">{formatRupiah(totalSavings)}</dd>
-            <span>Dari PO yang sudah terbit</span>
           </div>
           <div>
             <dt>Pool aktif</dt>
             <dd>{activePools.length}</dd>
-            <span>Di jaringan pengadaan</span>
           </div>
           <div>
             <dt>PO diikuti</dt>
             <dd>{allocations.length}</dd>
-            <span>Dengan Alokasi Proporsional</span>
           </div>
         </dl>
 
@@ -85,18 +78,7 @@ export function RoleHome({ auth, pools, allocations }: RoleHomeProps) {
           </section>
 
           <section className="home-pools" aria-labelledby="home-pools-title">
-            <div className="section-heading-row">
-              <div>
-                <p className="eyebrow">Perlu perhatian</p>
-                <h2 id="home-pools-title">Pool terdekat ke target</h2>
-              </div>
-              <Link href="/pool">Lihat semua</Link>
-            </div>
-            <div className="home-pools__list">
-              {priorityPools.map((pool) => (
-                <PoolCard key={pool.id} pool={pool} />
-              ))}
-            </div>
+            <PoolLoop pools={priorityPools} />
           </section>
         </div>
       </section>

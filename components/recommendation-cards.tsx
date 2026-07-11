@@ -102,71 +102,83 @@ export function RecommendationCards() {
     };
   }, []);
 
-  if (state.status === "empty") {
-    return null; // tanpa rekomendasi, beranda tetap bersih — bukan error state
-  }
-
   return (
     <section className="rec-section" aria-label="Rekomendasi Pengadaan Cerdas">
-      <h2 className="rec-section__title">Rekomendasi Pengadaan Cerdas</h2>
+      <div className="home-section-heading">
+        <h2 className="rec-section__title">Rekomendasi Pengadaan Cerdas</h2>
+      </div>
 
-      {state.status === "loading" ? (
+      {state.status === "empty" ? (
+        <div className="rec-empty">
+          Belum ada rekomendasi baru untuk stok dan riwayat transaksi saat ini.
+        </div>
+      ) : state.status === "loading" ? (
         <div className="rec-card is-loading" aria-hidden="true">
           <span className="rec-skeleton" />
           <span className="rec-skeleton is-short" />
+          <span className="rec-skeleton" />
         </div>
       ) : (
         state.cards.map((card) => {
           const hasPool = card.pool_ref !== null;
           const whyOpen = openWhy === card.komoditas_id;
+          const stockDays = Math.max(1, Math.round(card.days_of_stock));
 
           return (
             <article className="rec-card" key={card.komoditas_id}>
               <header className="rec-card__header">
-                <h3>{card.komoditas}</h3>
+                <div>
+                  <h3>{card.komoditas}</h3>
+                  <p className="rec-card__narasi">{card.narasi}</p>
+                </div>
                 {card.flag_het ? (
                   <span className="rec-badge-het">Beli di atas HET</span>
                 ) : null}
               </header>
 
-              <p className="rec-card__narasi">{card.narasi}</p>
-
-              {card.habis_pada ? (
-                <p className="rec-card__stok">
-                  Prediksi stok habis{" "}
-                  <strong>{formatTanggal(card.habis_pada)}</strong> (
-                  {Math.max(1, Math.round(card.days_of_stock))} hari lagi)
-                </p>
-              ) : null}
+              <dl className="rec-card__metrics">
+                <div>
+                  <dt>Stok tersisa</dt>
+                  <dd>{stockDays} hari</dd>
+                  {card.habis_pada ? (
+                    <span>Habis {formatTanggal(card.habis_pada)}</span>
+                  ) : null}
+                </div>
+                <div>
+                  <dt>Usulan volume</dt>
+                  <dd>
+                    {card.qty_saran.toLocaleString("id-ID")} {card.satuan}
+                  </dd>
+                </div>
+                <div className="is-savings">
+                  <dt>Potensi hemat</dt>
+                  <dd>{formatRupiah(card.hemat_estimasi)}</dd>
+                </div>
+              </dl>
 
               {card.pool_progress ? (
                 <div className="rec-card__pool">
+                  <div className="rec-card__pool-heading">
+                    <span>
+                      Pool aktif · Tier {card.pool_progress.tier_nama}
+                    </span>
+                    <strong>{card.pool_progress.percent}%</strong>
+                  </div>
                   <div className="pool-card__progress" aria-hidden="true">
                     <span
                       style={{ width: `${card.pool_progress.percent}%` }}
                     />
                   </div>
                   <p className="pool-card__volume">
-                    <strong>
-                      {card.pool_progress.total_volume.toLocaleString("id-ID")}
-                    </strong>{" "}
-                    / {card.pool_progress.min_volume.toLocaleString("id-ID")}{" "}
-                    {card.satuan} menuju Ambang Tier{" "}
-                    {card.pool_progress.tier_nama} (
-                    {formatRupiah(card.pool_progress.tier_harga)}/{card.satuan})
+                    {card.pool_progress.total_volume.toLocaleString("id-ID")} /{" "}
+                    {card.pool_progress.min_volume.toLocaleString("id-ID")} {card.satuan}
+                    {" · "}
+                    {formatRupiah(card.pool_progress.tier_harga)}/{card.satuan}
                     {card.deadline_pool
                       ? ` — ditutup ${formatTanggal(card.deadline_pool)}`
                       : ""}
                   </p>
                 </div>
-              ) : null}
-
-              {card.hemat_estimasi > 0 ? (
-                <p className="rec-card__hemat">
-                  Estimasi hemat{" "}
-                  <strong>{formatRupiah(card.hemat_estimasi)}</strong> vs
-                  pembelian terakhirmu
-                </p>
               ) : null}
 
               <div className="rec-card__footer">

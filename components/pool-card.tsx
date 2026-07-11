@@ -43,7 +43,7 @@ export function PoolCard({ pool }: PoolCardProps) {
           </div>
           <p className="pool-card__volume">
             <strong>{formatNumber(pool.totalVolume)}</strong> /{" "}
-            {formatNumber(target.minVolume)} {pool.unit} menuju Ambang Tier {target.name}
+            {formatNumber(target.minVolume)} {pool.unit}
           </p>
         </>
       ) : (
