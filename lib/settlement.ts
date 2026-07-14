@@ -85,20 +85,20 @@ const DEMO_SETTLEMENT: SettlementDetail = buildSettlement({
 
 async function getSupabaseSettlement(): Promise<SettlementDetail | null> {
   const supabase = await createSupabaseServerClient();
-  const { data: row } = await supabase
-    .from("settlements")
-    .select("id, coop_a, coop_b, tagihan_a_ke_b, tagihan_b_ke_a")
-    .limit(1)
-    .maybeSingle();
+  const [{ data: row }, { data: coops }] = await Promise.all([
+    supabase
+      .from("settlements")
+      .select("id, coop_a, coop_b, tagihan_a_ke_b, tagihan_b_ke_a")
+      .limit(1)
+      .maybeSingle(),
+    supabase
+      .from("cooperatives")
+      .select("id, nama, kabupaten, provinsi"),
+  ]);
 
   if (!row) {
     return null;
   }
-
-  const { data: coops } = await supabase
-    .from("cooperatives")
-    .select("id, nama, kabupaten, provinsi")
-    .in("id", [row.coop_a, row.coop_b]);
 
   const findCoop = (id: string) => {
     const match = (coops ?? []).find((coop) => coop.id === id);

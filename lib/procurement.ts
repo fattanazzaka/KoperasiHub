@@ -344,24 +344,25 @@ export async function issuePurchaseOrder(
 
 async function getSupabasePurchaseOrder(poolId: string): Promise<PurchaseOrder | null> {
   const supabase = await createSupabaseServerClient();
-  const { data: pool } = await supabase
-    .from("pools")
-    .select(
-      "id, po_number, commodity_id, wilayah, status, commodities(id, nama, satuan), price_tiers(id, nama_tier, harga_per_unit, suppliers(id, nama, tipe, lokasi))",
-    )
-    .eq("id", poolId)
-    .eq("status", "po_issued")
-    .single();
+  const [{ data: pool }, { data: allocationRows }] = await Promise.all([
+    supabase
+      .from("pools")
+      .select(
+        "id, po_number, commodity_id, wilayah, status, commodities(id, nama, satuan), price_tiers(id, nama_tier, harga_per_unit, suppliers(id, nama, tipe, lokasi))",
+      )
+      .eq("id", poolId)
+      .eq("status", "po_issued")
+      .single(),
+    supabase
+      .from("allocations")
+      .select(
+        "cooperative_id, volume, harga_tier, hemat_rp, fee_rp, cooperatives(id, nama, nib)",
+      )
+      .eq("pool_id", poolId),
+  ]);
   if (!pool) {
     return null;
   }
-
-  const { data: allocationRows } = await supabase
-    .from("allocations")
-    .select(
-      "cooperative_id, volume, harga_tier, hemat_rp, fee_rp, cooperatives(id, nama, nib)",
-    )
-    .eq("pool_id", poolId);
   const commodity = unwrapRelation(pool.commodities);
   const tier = unwrapRelation(pool.price_tiers);
   const supplier = tier ? unwrapRelation(tier.suppliers) : null;
@@ -457,13 +458,15 @@ export async function getCooperativeAllocations(
   }
 
   const supabase = await createSupabaseServerClient();
-  const { data: rows } = await supabase
-    .from("allocations")
-    .select(
-      "pool_id, cooperative_id, volume, harga_tier, hemat_rp, fee_rp, pools(id, po_number, commodity_id, wilayah, commodities(id, nama, satuan), price_tiers(id, nama_tier, harga_per_unit, suppliers(id, nama, tipe, lokasi)))",
-    )
-    .eq("cooperative_id", auth.cooperative.id);
-  const { data: aggregateRows } = await supabase.rpc("get_allocation_stats");
+  const [{ data: rows }, { data: aggregateRows }] = await Promise.all([
+    supabase
+      .from("allocations")
+      .select(
+        "pool_id, cooperative_id, volume, harga_tier, hemat_rp, fee_rp, pools(id, po_number, commodity_id, wilayah, commodities(id, nama, satuan), price_tiers(id, nama_tier, harga_per_unit, suppliers(id, nama, tipe, lokasi)))",
+      )
+      .eq("cooperative_id", auth.cooperative.id),
+    supabase.rpc("get_allocation_stats"),
+  ]);
 
   return (rows ?? []).flatMap((row): CooperativeAllocation[] => {
     const pool = unwrapRelation(row.pools);

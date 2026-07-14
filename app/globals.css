@@ -2540,6 +2540,86 @@ a:focus-visible {
   padding-bottom: 76px;
 }
 
+.app-nav-pending {
+  width: 14px;
+  height: 14px;
+  margin-left: auto;
+  border: 2px solid transparent;
+  border-top-color: currentColor;
+  border-radius: 999px;
+  opacity: 0;
+}
+
+.app-nav-pending.is-pending {
+  animation: app-nav-pending-spin 700ms linear infinite;
+  opacity: 0.72;
+}
+
+@keyframes app-nav-pending-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.route-loading {
+  position: relative;
+  min-height: 100vh;
+  overflow: hidden;
+  background: #f4f5f7;
+  color: #20242c;
+}
+
+.route-loading__progress {
+  position: absolute;
+  inset: 0 auto auto 0;
+  width: 38%;
+  height: 3px;
+  background: #bd332a;
+  animation: route-loading-progress 1.1s ease-in-out infinite alternate;
+}
+
+.route-loading__content {
+  display: grid;
+  align-content: start;
+  gap: 7px;
+  min-height: 100vh;
+  padding: clamp(48px, 8vw, 96px) clamp(24px, 8vw, 120px);
+}
+
+.route-loading__eyebrow {
+  color: #a42d26;
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.route-loading__content strong {
+  font-size: clamp(1.25rem, 2vw, 1.75rem);
+}
+
+.route-loading__content > span:last-child {
+  color: #68707d;
+  font-size: 0.92rem;
+}
+
+@keyframes route-loading-progress {
+  from {
+    transform: translateX(-35%);
+  }
+
+  to {
+    transform: translateX(200%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-nav-pending.is-pending,
+  .route-loading__progress {
+    animation: none;
+  }
+}
+
 .app-sidebar {
   display: none;
 }

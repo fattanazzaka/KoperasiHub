@@ -12,6 +12,7 @@
 // Modul murni: satu-satunya dependensi adalah tipe PoolDetail + data inventaris sintesis.
 
 import { getInventorySnapshot, type InventoryRecord } from "@/lib/inventory";
+import { getActionablePools } from "@/lib/pool-availability";
 import type { PoolDetail } from "@/lib/pool-types";
 
 export const SKOR_BOBOT = {
@@ -351,14 +352,11 @@ export function computeSignals(
 ): CandidateSignal[] {
   const now = context.now ?? new Date();
   const inventory = getInventorySnapshot(cooperativeId);
+  const activePools = getActionablePools(context.pools, context.wilayah);
 
   const inputs = inventory.map((record: InventoryRecord): CandidateInput => {
-    const pool = context.pools.find(
-      (candidate) =>
-        candidate.commodityId === record.commodityId &&
-        candidate.wilayah === context.wilayah &&
-        candidate.status === "open" &&
-        candidate.daysRemaining > 0,
+    const pool = activePools.find(
+      (candidate) => candidate.commodityId === record.commodityId,
     );
     const targetTier = pool?.progress.targetTier ?? null;
 

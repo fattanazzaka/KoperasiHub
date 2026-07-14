@@ -18,7 +18,10 @@ export default async function CooperativeHomePage() {
   }
 
   const [pools, allocations] = await Promise.all([
-    getPoolDetails(auth),
+    getPoolDetails(auth, {
+      status: "open",
+      wilayah: auth.cooperative?.kabupaten,
+    }),
     getCooperativeAllocations(auth),
   ]);
 

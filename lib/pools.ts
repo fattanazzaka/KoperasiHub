@@ -53,6 +53,34 @@ type UserDemandRow = {
   harga_penawaran: number | null;
 };
 
+type PriceTierRow = {
+  id: string;
+  commodity_id: string;
+  nama_tier: string;
+  min_volume: number;
+  harga_per_unit: number;
+  suppliers:
+    | {
+        id: string;
+        nama: string;
+        tipe: string;
+        lokasi: string | null;
+      }
+    | Array<{
+        id: string;
+        nama: string;
+        tipe: string;
+        lokasi: string | null;
+      }>
+    | null;
+};
+
+export type PoolQueryOptions = {
+  poolId?: string;
+  status?: PoolDetail["status"];
+  wilayah?: string;
+};
+
 const DAY_IN_MS = 86_400_000;
 
 function calculateDaysRemaining(windowEnd: string): number {
@@ -313,41 +341,61 @@ function normalizeSupplierType(value: string): DevSupplierType {
 
 async function getSupabasePoolDetails(
   auth: AuthContext,
+  options: PoolQueryOptions,
 ): Promise<PoolDetail[]> {
   const supabase = await createSupabaseServerClient();
-  const { data: pools, error: poolsError } = await supabase
+  let poolsQuery = supabase
     .from("pools")
     .select(
       "id, commodity_id, wilayah, window_start, window_end, status, commodities(id, nama, satuan)",
     )
     .order("window_end", { ascending: true });
 
+  if (options.poolId) {
+    poolsQuery = poolsQuery.eq("id", options.poolId);
+  }
+  if (options.status) {
+    poolsQuery = poolsQuery.eq("status", options.status);
+  }
+  if (options.wilayah) {
+    poolsQuery = poolsQuery.eq("wilayah", options.wilayah);
+  }
+
+  const userDemandsQuery = auth.cooperative
+    ? supabase
+        .from("demands")
+        .select("pool_id, role, volume, harga_baseline, harga_penawaran")
+        .eq("cooperative_id", auth.cooperative.id)
+    : Promise.resolve({ data: [] as UserDemandRow[] });
+  const [poolsResult, statsResult, tiersResult, userDemandsResult] =
+    await Promise.all([
+      poolsQuery,
+      supabase.rpc("get_pool_stats"),
+      supabase
+        .from("price_tiers")
+        .select(
+          "id, commodity_id, nama_tier, min_volume, harga_per_unit, suppliers(id, nama, tipe, lokasi)",
+        )
+        .order("min_volume", { ascending: true }),
+      userDemandsQuery,
+    ]);
+
+  const { data: pools, error: poolsError } = poolsResult;
   if (poolsError || !pools?.length) {
     return [];
   }
 
-  const poolIds = pools.map((pool) => pool.id);
-  const commodityIds = [...new Set(pools.map((pool) => pool.commodity_id))];
-  const [{ data: stats }, { data: tierRows }] = await Promise.all([
-    supabase.rpc("get_pool_stats"),
-    supabase
-      .from("price_tiers")
-      .select(
-        "id, commodity_id, nama_tier, min_volume, harga_per_unit, suppliers(id, nama, tipe, lokasi)",
-      )
-      .in("commodity_id", commodityIds)
-      .order("min_volume", { ascending: true }),
-  ]);
-  let userDemands: UserDemandRow[] = [];
-
-  if (auth.cooperative) {
-    const { data } = await supabase
-      .from("demands")
-      .select("pool_id, role, volume, harga_baseline, harga_penawaran")
-      .eq("cooperative_id", auth.cooperative.id)
-      .in("pool_id", poolIds);
-    userDemands = (data ?? []) as UserDemandRow[];
-  }
+  const poolIds = new Set(pools.map((pool) => pool.id));
+  const commodityIds = new Set(pools.map((pool) => pool.commodity_id));
+  const stats = ((statsResult.data ?? []) as PoolStatsRow[]).filter((row) =>
+    poolIds.has(row.pool_id),
+  );
+  const tierRows = ((tiersResult.data ?? []) as PriceTierRow[]).filter((row) =>
+    commodityIds.has(row.commodity_id),
+  );
+  const userDemands = ((userDemandsResult.data ?? []) as UserDemandRow[]).filter(
+    (row) => poolIds.has(row.pool_id),
+  );
 
   return pools.map((pool) => {
     const commodityRelation = Array.isArray(pool.commodities)
@@ -439,17 +487,27 @@ async function getSupabasePoolDetails(
   });
 }
 
-export async function getPoolDetails(auth: AuthContext): Promise<PoolDetail[]> {
-  return isSupabaseConfigured()
-    ? getSupabasePoolDetails(auth)
-    : getDevPoolDetails();
+export async function getPoolDetails(
+  auth: AuthContext,
+  options: PoolQueryOptions = {},
+): Promise<PoolDetail[]> {
+  const pools = isSupabaseConfigured()
+    ? await getSupabasePoolDetails(auth, options)
+    : await getDevPoolDetails();
+
+  return pools.filter(
+    (pool) =>
+      (!options.poolId || pool.id === options.poolId) &&
+      (!options.status || pool.status === options.status) &&
+      (!options.wilayah || pool.wilayah === options.wilayah),
+  );
 }
 
 export async function getPoolDetail(
   auth: AuthContext,
   poolId: string,
 ): Promise<PoolDetail | null> {
-  const pools = await getPoolDetails(auth);
+  const pools = await getPoolDetails(auth, { poolId });
   const directMatch = pools.find((pool) => pool.id === poolId);
 
   if (directMatch) {

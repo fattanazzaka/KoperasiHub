@@ -29,9 +29,24 @@ type RecommendationResponse = {
   sumber: "llm" | "cache" | "template";
 };
 
-// Cache respons sukses terakhir per koperasi. In-memory cukup untuk demo satu
+// Cache dikunci per koperasi dan fingerprint sinyal agar perubahan pool tidak
+// menggunakan narasi lama. In-memory cukup untuk demo satu
 // instance (Vercel: per-lambda, best-effort — fallback template tetap menjamin isi).
 const lastGoodResponse = new Map<string, RecommendationResponse>();
+
+function buildCacheKey(
+  cooperativeId: string,
+  signals: CandidateSignal[],
+): string {
+  const fingerprint = signals.map((signal) => [
+    signal.commodityId,
+    signal.poolId,
+    signal.hargaTierPool,
+    signal.qtySaran,
+    signal.hematEstimasi,
+  ]);
+  return `${cooperativeId}:${JSON.stringify(fingerprint)}`;
+}
 
 const CARD_SCHEMA = {
   type: "object",
@@ -222,7 +237,10 @@ export async function POST(): Promise<NextResponse> {
   }
 
   const cooperative = auth.cooperative;
-  const pools = await getPoolDetails(auth);
+  const pools = await getPoolDetails(auth, {
+    status: "open",
+    wilayah: cooperative.kabupaten,
+  });
   const signals = computeSignals(cooperative.id, {
     wilayah: cooperative.kabupaten,
     pools,
@@ -236,6 +254,7 @@ export async function POST(): Promise<NextResponse> {
   }
 
   const contexts = buildContexts(signals, pools, cooperative.kabupaten);
+  const cacheKey = buildCacheKey(cooperative.id, signals);
 
   // Lapis 1: tanpa key → template, tanpa panggilan jaringan.
   if (!process.env.ANTHROPIC_API_KEY) {
@@ -250,11 +269,11 @@ export async function POST(): Promise<NextResponse> {
       rekomendasi: await narrateWithClaude(signals, contexts),
       sumber: "llm",
     };
-    lastGoodResponse.set(cooperative.id, payload);
+    lastGoodResponse.set(cacheKey, payload);
     return NextResponse.json(payload);
   } catch {
     // Lapis 2: respons sukses terakhir; Lapis 3: template.
-    const cached = lastGoodResponse.get(cooperative.id);
+    const cached = lastGoodResponse.get(cacheKey);
     if (cached) {
       return NextResponse.json<RecommendationResponse>({
         ...cached,

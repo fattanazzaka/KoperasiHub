@@ -1,6 +1,7 @@
 import "server-only";
 
 import { cookies } from "next/headers";
+import { cache } from "react";
 
 import {
   DEMO_SESSION_COOKIE,
@@ -42,7 +43,9 @@ async function getSupabaseAuthContext(): Promise<AuthContext | null> {
 
   const { data: profile } = await supabase
     .from("users")
-    .select("role, display_name, cooperative_id")
+    .select(
+      "role, display_name, cooperative_id, cooperatives(id, nama, kabupaten, provinsi, kode_wilayah)",
+    )
     .eq("id", user.id)
     .single();
 
@@ -50,25 +53,18 @@ async function getSupabaseAuthContext(): Promise<AuthContext | null> {
     return null;
   }
 
-  let cooperative: AuthContext["cooperative"] = null;
-
-  if (profile.cooperative_id) {
-    const { data } = await supabase
-      .from("cooperatives")
-      .select("id, nama, kabupaten, provinsi, kode_wilayah")
-      .eq("id", profile.cooperative_id)
-      .single();
-
-    if (data) {
-      cooperative = {
-        id: data.id,
-        nama: data.nama,
-        kabupaten: data.kabupaten,
-        provinsi: data.provinsi,
-        kodeWilayah: data.kode_wilayah ?? null,
-      };
-    }
-  }
+  const cooperativeRelation = Array.isArray(profile.cooperatives)
+    ? profile.cooperatives[0]
+    : profile.cooperatives;
+  const cooperative: AuthContext["cooperative"] = cooperativeRelation
+    ? {
+        id: cooperativeRelation.id,
+        nama: cooperativeRelation.nama,
+        kabupaten: cooperativeRelation.kabupaten,
+        provinsi: cooperativeRelation.provinsi,
+        kodeWilayah: cooperativeRelation.kode_wilayah ?? null,
+      }
+    : null;
 
   return {
     userId: user.id,
@@ -114,8 +110,12 @@ async function getDemoAuthContext(): Promise<AuthContext | null> {
   return null;
 }
 
-export async function getAuthContext(): Promise<AuthContext | null> {
+async function resolveAuthContext(): Promise<AuthContext | null> {
   return isSupabaseConfigured()
     ? getSupabaseAuthContext()
     : getDemoAuthContext();
 }
+
+// A route can request auth from its layout, page, and data loaders. React cache
+// keeps those calls on the same render request from repeating Supabase lookups.
+export const getAuthContext = cache(resolveAuthContext);

@@ -3,6 +3,7 @@ import Image from "next/image";
 import type { ReactNode } from "react";
 
 import { logoutAction } from "@/app/actions/auth";
+import { NavigationLink } from "@/components/navigation-link";
 import type { AuthContext } from "@/lib/auth";
 
 export type AppSection =
@@ -136,17 +137,17 @@ export function AppShell({ auth, active, children }: AppShellProps) {
 
         <nav className="app-sidebar__nav">
           {navigation.map((item) => (
-            <Link
+            <NavigationLink
               className={active === item.id ? "is-active" : undefined}
               href={item.href}
-              aria-current={active === item.id ? "page" : undefined}
+              ariaCurrent={active === item.id ? "page" : undefined}
               key={item.id}
             >
               <span className="app-nav-icon">
                 <NavigationIcon id={item.id} />
               </span>
               {item.label}
-            </Link>
+            </NavigationLink>
           ))}
         </nav>
 
@@ -171,17 +172,17 @@ export function AppShell({ auth, active, children }: AppShellProps) {
         aria-label="Navigasi utama"
       >
         {navigation.map((item) => (
-          <Link
+          <NavigationLink
             className={active === item.id ? "is-active" : undefined}
             href={item.href}
-            aria-current={active === item.id ? "page" : undefined}
+            ariaCurrent={active === item.id ? "page" : undefined}
             key={item.id}
           >
             <span className="app-nav-icon">
               <NavigationIcon id={item.id} />
             </span>
             {item.shortLabel}
-          </Link>
+          </NavigationLink>
         ))}
       </nav>
     </div>

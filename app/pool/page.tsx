@@ -21,9 +21,10 @@ export default async function PoolListPage() {
     redirect(getRoleDestination(auth.role));
   }
 
-  const pools = (await getPoolDetails(auth)).filter(
-    (pool) => pool.status === "open",
-  );
+  const pools = await getPoolDetails(auth, {
+    status: "open",
+    wilayah: auth.cooperative?.kabupaten,
+  });
 
   return (
     <AppShell auth={auth} active="pool">

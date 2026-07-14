@@ -1,6 +1,7 @@
 import { PoolLoop } from "@/components/pool-loop";
 import { RecommendationCards } from "@/components/recommendation-cards";
 import type { AuthContext } from "@/lib/auth";
+import { getActionablePools } from "@/lib/pool-availability";
 import type { PoolSummary } from "@/lib/pool-types";
 import type { CooperativeAllocation } from "@/lib/procurement-types";
 
@@ -19,9 +20,10 @@ export function RoleHome({ auth, pools, allocations }: RoleHomeProps) {
     (total, item) => total + item.allocation.savings,
     0,
   );
-  const activePools = pools.filter((pool) => pool.status === "open");
-  const priorityPools = [...activePools]
-    .sort((a, b) => b.progress.progressPercent - a.progress.progressPercent);
+  const activePools = getActionablePools(
+    pools,
+    auth.cooperative?.kabupaten ?? "",
+  );
 
   return (
     <main className="role-page">
@@ -56,7 +58,7 @@ export function RoleHome({ auth, pools, allocations }: RoleHomeProps) {
           </section>
 
           <section className="home-pools" aria-labelledby="home-pools-title">
-            <PoolLoop pools={priorityPools} />
+            <PoolLoop pools={activePools} />
           </section>
         </div>
       </section>
